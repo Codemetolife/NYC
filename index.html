@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NYC Trip Itinerary</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --accent: #38bdf8;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --highlight: #f59e0b;
+      --transit-bg: rgba(56, 189, 248, 0.1);
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 16px;
+      padding-bottom: 40px;
+    }
+    h1 {
+      text-align: center;
+      font-size: 1.4rem;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+    /* Tab Navigation */
+    .tab-container {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 20px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    .tab-btn {
+      flex: 1;
+      background: var(--card-bg);
+      color: var(--text-muted);
+      border: 1px solid #334155;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 0.8rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .tab-btn.active {
+      background: var(--accent);
+      color: var(--bg);
+      border-color: var(--accent);
+    }
+    /* Day Content */
+    .day-content { display: none; }
+    .day-content.active { display: block; }
+    
+    /* Itinerary Card */
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      border: 1px solid #334155;
+    }
+    .time-tag {
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .card-title {
+      font-size: 1.15rem;
+      margin: 4px 0 8px 0;
+    }
+    .special-badge {
+      display: inline-block;
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--highlight);
+      border: 1px solid var(--highlight);
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+    .transit-info {
+      background: var(--transit-bg);
+      border-left: 3px solid var(--accent);
+      padding: 8px 10px;
+      font-size: 0.8rem;
+      color: var(--text);
+      border-radius: 0 6px 6px 0;
+      margin-bottom: 10px;
+    }
+    .description {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      line-height: 1.4;
+      margin-bottom: 12px;
+    }
+    /* Action Buttons */
+    .link-group {
+      display: flex;
+      gap: 8px;
+    }
+    .btn {
+      flex: 1;
+      text-align: center;
+      padding: 8px 10px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .btn-map { background-color: #2563eb; color: #fff; }
+    .btn-link { background-color: #334155; color: var(--text); }
+  </style>
+</head>
+<body>
+
+  <h1>🗽 NYC Itinerary</h1>
+
+  <!-- Navigation Tabs -->
+  <div class="tab-container">
+    <button class="tab-btn active" onclick="switchDay('tue', this)">Tue 9/15</button>
+    <button class="tab-btn" onclick="switchDay('wed', this)">Wed 9/16</button>
+    <button class="tab-btn" onclick="switchDay('thu', this)">Thu 9/17</button>
+    <button class="tab-btn" onclick="switchDay('fri', this)">Fri 9/18</button>
+    <button class="tab-btn" onclick="switchDay('sat', this)">Sat 9/19</button>
+  </div>
+
+  <!-- TUESDAY -->
+  <div id="tue" class="day-content active">
+    <div class="card">
+      <span class="time-tag">11:00 AM – 1:30 PM</span>
+      <h2 class="card-title">Land at JFK & Check-in</h2>
+      <div class="transit-info">✈️ Transit: AirTrain to Jamaica → LIRR to Penn Station → short Taxi/Uber to Sheraton Times Square.</div>
+      <p class="description">Drop off luggage, change, and grab a quick lunch nearby.</p>
+    </div>
+    
+    <div class="card">
+      <span class="time-tag">3:00 PM – 4:30 PM</span>
+      <h2 class="card-title">Midtown Sights & Grand Central</h2>
+      <div class="transit-info">🚶 Walk or short cab ride down Fifth Avenue.</div>
+      <p class="description">Explore Bryant Park, NY Public Library Rose Reading Room, Chrysler Building exterior, and Grand Central Main Concourse.</p>
+    </div>
+
+    <div class="card">
+      <span class="time-tag">5:00 PM Onward</span>
+      <h2 class="card-title">Drinks & Dinner with Leonard & Bruce</h2>
+      <div class="special-badge">🍸 Historic Cocktail Lounge</div>
+      <p class="description">Meet up at The Campbell in Grand Central. Option to transition to Grand Brasserie for dinner.</p>
+      <div class="link-group">
+        <a href="https://maps.google.com/?q=The+Campbell+Grand+Central" target="_blank" class="btn btn-map">📍 Map</a>
+        <a href="https://www.thecampbellnyc.com/" target="_blank" class="btn btn-link">🌐 Menu</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- WEDNESDAY -->
+  <div id="wed" class="day-content">
+    <div class="card">
+      <span class="time-tag">7:00 AM – 4:00 PM</span>
+      <h2 class="card-title">Symposium at Grand Central</h2>
+      <div class="transit-info">🚕 Transit: Take a cab/Uber from Sheraton (~15 mins) for stress-free arrival.</div>
+      <p class="description">Full day conference with lunch provided.</p>
+    </div>
+
+    <div class="card">
+      <span class="time-tag">4:00 PM – 7:15 PM</span>
+      <h2 class="card-title">Decompress & Bonus Sights</h2>
+      <div class="special-badge">💡 Added Stop: Grand Central Market & Chrysler Lobby</div>
+      <p class="description">Grab a drink at Grand Brasserie or The Campbell, browse food stalls at Grand Central Market, and view the Art Deco Chrysler Building lobby across 42nd St.</p>
+    </div>
+
+    <div class="card">
+      <span class="time-tag">7:30 PM – 9:00 PM</span>
+      <h2 class="card-title">SUMMIT One Vanderbilt</h2>
+      <div class="special-badge">🎟️ RESERVED • Nighttime City Skyline</div>
+      <div class="transit-info">🚶 Connected directly to Grand Central Terminal.</div>
+      <p class="description">Immersive glass observatory experience overlooking Manhattan lit up at night.</p>
+      <div class="link-group">
+        <a href="https://maps.google.com/?q=SUMMIT+One+Vanderbilt" target="_blank" class="btn btn-map">📍 Map</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <span class="time-tag">9:00 PM</span>
+      <h2 class="card-title">Low-Key Dinner</h2>
+      <p class="description">Convenient options near Sheraton: Quality Bistro, The Consulate Midtown, or Ippudo Westside (casual ramen).</p>
+    </div>
+  </div>
+
+  <!-- THURSDAY -->
+  <div id="thu" class="day-content">
+    <div class="card">
+      <span class="time-tag">7:00 AM – 4:00 PM</span>
+      <h2 class="card-title">Symposium at Grand Central</h2>
+      <p class="description">Day 2 presentation and conference sessions.</p>
+    </div>
+
+    <div class="card">
+      <span class="time-tag">4:15 PM – 5:45 PM</span>
+      <h2 class="card-title">Oscar Wilde Happy Hour</h2>
+      <div class="special-badge">🍻 Weekday Happy Hour Specials</div>
+      <div class="transit-info">🚇 Transit: N/R/W Subway from 42nd St to 28th St (~10 mins) or Taxi.</div>
+      <p class="description">Victorian-themed bar with the longest continuous bar counter in NYC (45 W 27th St).</p>
+      <div class="link-group">
+        <a href="https://maps.google.com/?q=Oscar+Wilde+NYC" target="_blank" class="btn btn-map">📍 Map</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <span class="time-tag">8:00 PM</span>
+      <h2 class="card-title">Refinery Rooftop Drinks</h2>
+      <div class="special-badge">🍸 Direct Empire State Building View</div>
+      <div class="transit-info">🚕 Transit: Short Taxi/Uber north back toward Midtown.</div>
+      <p class="description">Trendy rooftop lounge close to Bryant Park with retractable glass ceiling.</p>
+      <div class="link-group">
+        <a href="https://maps.google.com/?q=Refinery+Rooftop" target="_blank" class="btn btn-map">📍 Map</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- FRIDAY -->
+  <div id="fri" class="day-content">
+    <div class="card">
+      <span class="time-tag">6:30 AM – 7:45 AM</span>
+      <h2 class="card-title">Central Park Sightseeing Run</h2>
+      <div class="transit-info">🏃 Walk 3 blocks north from Sheraton to Columbus Circle entrance.</div>
+      <p class="description">4–5 mile route covering Columbus Circle, The Mall, Bethesda Terrace & Fountain, and the Lower Loop.</p>
+    </div>
+
+    <div class="card">
+      <span class="time-tag">2:30 PM – 6:15 PM</span>
+      <h2 class="card-title">The Metropolitan Museum of Art</h2>
+      <div class="special-badge">🍷 5:00 PM Date Night 2-for-1 Drinks & Live Music</div>
+      <div class="transit-info">🚕 Transit: Taxi/Uber up Fifth Ave OR 4/5/6 Subway to 86th St.</div>
+      <p class="description">Explore galleries, rooftop garden, and stay until 6:15 PM to enjoy Date Night drink specials in the Great Hall balcony bar.</p>
+      <div class="link-group">
+        <a href="https://maps.google.com/?q=The+Metropolitan+Museum+of+Art" target="_blank" class="btn btn-map">📍 Map</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <span class="time-tag">6:30 PM – 7:45 PM</span>
+      <h2 class="card-title">The Morgan Library & Museum</h2>
+      <div class="special-badge">🎟️ Free Friday Admission (Reservation Required)</div>
+      <div class="transit-info">🚇 Fast Transit: 4 or 5 Express Subway from 86th St to Grand Central (~12 mins) → walk 4 blocks south.</div>
+      <p class="description">View Pierpont Morgan's stunning historic library and manuscript collections.</p>
+      <div class="link-group">
+        <a href="https://maps.google.com/?q=The+Morgan+Library+%26+Museum" target="_blank" class="btn btn-map">📍 Map</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <span class="time-tag">8:00 PM</span>
+      <h2 class="card-title">Fancy Dinner: Ci Siamo</h2>
+      <div class="special-badge">🍽️ Dressed-Up Night Out</div>
+      <div class="transit-info">🚕 Transit: Taxi/Uber to Manhattan West (~12 mins).</div>
+      <p class="description">Stylish Italian dining room featuring open-fire cooking and house-made pasta.</p>
+      <div class="link-group">
+        <a href="https://maps.google.com/?q=Ci+Siamo+NYC" target="_blank" class="btn btn-map">📍 Map</a>
+        <a href="https://www.cisiamonyc.com/" target="_blank" class="btn btn-link">🌐 Menu</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- SATURDAY -->
+  <div id="sat" class="day-content">
+    <div class="card">
+      <span class="time-tag">8:30 AM – 12:00 PM</span>
+      <h2 class="card-title">DUMBO & Brooklyn Waterfront</h2>
+      <div class="transit-info">🚇 Transit: F Train from Rockefeller Ctr to York St OR Taxi to DUMBO (~25 mins).</div>
+      <p class="description">Visit Washington St Manhattan Bridge view, Pebble Beach, Jane's Carousel, and walk partway across the Brooklyn Bridge.</p>
+      <div class="link-group">
+        <a href="https://maps.google.com/?q=DUMBO+Brooklyn" target="_blank" class="btn btn-map">📍 Map</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <span class="time-tag">12:00 PM – 1:15 PM</span>
+      <h2 class="card-title">Waterfront Lunch</h2>
+      <p class="description">Options: Cecconi's DUMBO, Time Out Market, or Juliana's Pizza.</p>
+    </div>
+
+    <div class="card">
+      <span class="time-tag">2:45 PM</span>
+      <h2 class="card-title">Depart for JFK Airport</h2>
+      <div class="transit-info">🚕 Transit: Taxi to Penn Station → LIRR train to Jamaica → AirTrain to Terminal.</div>
+      <p class="description">Head out for your 6:51 PM departure flight.</p>
+    </div>
+  </div>
+
+  <script>
+    function switchDay(dayId, btn) {
+      document.querySelectorAll('.day-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById(dayId).classList.add('active');
+      btn.classList.add('active');
+    }
+  </script>
+</body>
+</html>
