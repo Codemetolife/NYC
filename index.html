@@ -3,434 +3,404 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NYC Trip • Itinerary</title>
+  <meta name="theme-color" content="#0b1020">
+  <meta name="description" content="Damaris's interactive September 2026 New York City itinerary.">
+  <title>NYC Trip • Interactive Itinerary</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0b0f17;
-      --card-bg: rgba(23, 30, 44, 0.75);
-      --accent: #f472b6; /* Trendy Rose Accent */
-      --gold: #fbbf24;   /* Champagne Gold */
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-      --border: rgba(255, 255, 255, 0.08);
-      --glass: rgba(255, 255, 255, 0.03);
+      --ink: #0b1020;
+      --panel: #11182b;
+      --panel-2: #182138;
+      --cream: #fff7e8;
+      --muted: #aab4ca;
+      --rose: #f39ac6;
+      --rose-deep: #cf5f9d;
+      --gold: #f7c95e;
+      --taxi: #ffd23f;
+      --blue: #6aa9ff;
+      --line: rgba(255,255,255,.12);
+      --shadow: 0 22px 60px rgba(0,0,0,.3);
     }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      background-color: var(--bg);
-      background-image: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #0b0f17 70%);
-      color: var(--text);
       margin: 0;
-      padding: 20px 16px 40px 16px;
       min-height: 100vh;
+      color: var(--cream);
+      font-family: "DM Sans", sans-serif;
+      background:
+        radial-gradient(circle at 20% 0%, rgba(243,154,198,.14), transparent 28rem),
+        radial-gradient(circle at 85% 20%, rgba(106,169,255,.10), transparent 30rem),
+        var(--ink);
     }
-    header {
-      text-align: center;
-      margin-bottom: 24px;
-    }
-    h1 {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.8rem;
-      letter-spacing: -0.5px;
-      background: linear-gradient(135deg, #fff 30%, var(--accent));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin: 0 0 6px 0;
-    }
-    .subtitle {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 2px;
-    }
-    
-    /* Navigation Tabs */
-    .tab-container {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 24px;
-      overflow-x: auto;
-      padding-bottom: 4px;
-      scrollbar-width: none;
-    }
-    .tab-container::-webkit-scrollbar { display: none; }
-    
-    .tab-btn {
-      flex: 1;
-      background: var(--glass);
-      backdrop-filter: blur(12px);
-      color: var(--text-muted);
-      border: 1px solid var(--border);
-      padding: 10px 14px;
-      border-radius: 20px;
-      font-weight: 600;
-      font-size: 0.8rem;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.2s ease;
-    }
-    .tab-btn.active {
-      background: #ffffff;
-      color: #000000;
-      border-color: #ffffff;
-      box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
-    }
+    button, a { font: inherit; }
+    button { color: inherit; }
+    a { color: inherit; }
+    :focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
 
-    /* Cards */
-    .day-content { display: none; }
-    .day-content.active { display: block; }
-    
+    .shell { width: min(1180px, calc(100% - 32px)); margin: 0 auto; padding: 28px 0 60px; }
+    .hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
+    .eyebrow { color: var(--gold); font-size: .78rem; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; }
+    h1 { margin: 6px 0 0; font-family: "Playfair Display", serif; font-size: clamp(2.15rem, 6vw, 4.2rem); line-height: .98; letter-spacing: -.035em; }
+    h1 em { color: var(--rose); }
+    .trip-meta { color: var(--muted); text-align: right; line-height: 1.6; }
+
+    .toolbar { position: sticky; top: 0; z-index: 20; padding: 12px 0; background: linear-gradient(var(--ink) 70%, transparent); }
+    .toolbar-inner { display: flex; gap: 12px; justify-content: space-between; align-items: center; }
+    .days { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding: 2px; }
+    .days::-webkit-scrollbar { display: none; }
+    .day-btn, .view-btn {
+      border: 1px solid var(--line); background: rgba(255,255,255,.04); border-radius: 999px;
+      padding: 10px 16px; cursor: pointer; white-space: nowrap; transition: .2s ease;
+    }
+    .day-btn:hover, .view-btn:hover { border-color: rgba(243,154,198,.6); transform: translateY(-1px); }
+    .day-btn[aria-selected="true"] { background: var(--cream); color: var(--ink); border-color: var(--cream); font-weight: 700; }
+    .view-toggle { display: flex; padding: 4px; border: 1px solid var(--line); border-radius: 999px; background: rgba(17,24,43,.85); }
+    .view-btn { border: 0; padding: 8px 13px; }
+    .view-btn[aria-pressed="true"] { background: var(--rose); color: #281226; font-weight: 700; }
+
+    .view { margin-top: 14px; }
+    .view[hidden] { display: none; }
+
+    /* Timeline */
+    .day-intro { display: flex; justify-content: space-between; align-items: end; margin: 24px 0 16px; }
+    .day-intro h2 { font-family: "Playfair Display", serif; font-size: 2rem; margin: 0; }
+    .day-intro span { color: var(--muted); }
+    .timeline { position: relative; display: grid; gap: 14px; padding-left: 32px; }
+    .timeline::before { content: ""; position: absolute; left: 10px; top: 18px; bottom: 18px; width: 2px; background: linear-gradient(var(--rose), var(--gold)); }
     .card {
-      background: var(--card-bg);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-radius: 16px;
-      padding: 18px;
-      margin-bottom: 16px;
-      border: 1px solid var(--border);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      position: relative; overflow: hidden; border: 1px solid var(--line); border-radius: 20px;
+      background: linear-gradient(145deg, rgba(24,33,56,.96), rgba(14,20,36,.96)); box-shadow: 0 10px 35px rgba(0,0,0,.15);
+      padding: 22px; transition: transform .2s ease, border-color .2s ease;
     }
-    .time-tag {
-      font-size: 0.75rem;
-      color: var(--gold);
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-    .card-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.25rem;
-      margin: 6px 0 10px 0;
-      letter-spacing: -0.3px;
-    }
-    .special-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      background: rgba(244, 114, 182, 0.12);
-      color: var(--accent);
-      border: 1px solid rgba(244, 114, 182, 0.3);
-      font-size: 0.75rem;
-      font-weight: 600;
-      padding: 4px 10px;
-      border-radius: 20px;
-      margin-bottom: 12px;
-    }
-    .transit-info {
-      background: rgba(255, 255, 255, 0.04);
-      border-left: 2px solid var(--accent);
-      padding: 8px 12px;
-      font-size: 0.8rem;
-      color: #cbd5e1;
-      border-radius: 0 8px 8px 0;
-      margin-bottom: 12px;
-    }
-    .description {
-      color: var(--text-muted);
-      font-size: 0.88rem;
-      line-height: 1.5;
-      margin-bottom: 14px;
-    }
-    .sub-section {
-      background: rgba(0, 0, 0, 0.2);
-      border-radius: 10px;
-      padding: 12px;
-      margin-bottom: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    .sub-title {
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 6px;
-    }
+    .card:hover { transform: translateY(-2px); border-color: rgba(243,154,198,.35); }
+    .card::before { content: ""; position: absolute; width: 15px; height: 15px; left: -30px; top: 25px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 5px var(--ink); }
+    .card-top { display: flex; justify-content: space-between; gap: 14px; align-items: start; }
+    .card-icon { display: grid; place-items: center; flex: 0 0 auto; width: 48px; height: 48px; font-size: 1.55rem; border-radius: 15px; background: rgba(243,154,198,.13); }
+    .time { color: var(--gold); text-transform: uppercase; letter-spacing: .09em; font-size: .78rem; font-weight: 700; }
+    .card h3 { margin: 4px 0 9px; font-size: 1.28rem; }
+    .description { color: #d4daea; line-height: 1.65; margin: 0; }
+    .transit { margin: 14px 0 0; padding: 11px 13px; border-left: 2px solid var(--rose); background: rgba(255,255,255,.035); color: var(--muted); border-radius: 0 9px 9px 0; }
+    .badges { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14px; }
+    .badge { border: 1px solid rgba(243,154,198,.28); background: rgba(243,154,198,.1); color: #ffd0e7; border-radius: 999px; padding: 5px 9px; font-size: .76rem; font-weight: 700; }
+    details { margin-top: 15px; border-top: 1px solid var(--line); padding-top: 13px; }
+    summary { cursor: pointer; color: var(--gold); font-weight: 700; }
+    .option { padding: 12px 0; color: #d7ddeb; line-height: 1.55; }
+    .option + .option { border-top: 1px dashed var(--line); }
+    .option strong { color: white; display: block; margin-bottom: 4px; }
+    .links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .link { text-decoration: none; border: 1px solid var(--line); background: rgba(255,255,255,.05); border-radius: 10px; padding: 8px 11px; font-size: .85rem; }
+    .link:hover { border-color: var(--rose); background: rgba(243,154,198,.09); }
 
-    /* Buttons */
-    .link-group {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
+    /* Map */
+    .map-layout { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(300px, .7fr); gap: 16px; margin-top: 18px; }
+    .map-wrap { position: relative; min-height: 610px; overflow: hidden; border: 1px solid var(--line); border-radius: 26px; background: #111a2e; box-shadow: var(--shadow); isolation: isolate; }
+    .map-wrap::before {
+      content: ""; position: absolute; inset: 0; opacity: .55; z-index: -2;
+      background:
+        linear-gradient(62deg, transparent 47%, rgba(255,255,255,.07) 48%, rgba(255,255,255,.07) 49%, transparent 50%) 0 0/95px 95px,
+        linear-gradient(-28deg, transparent 47%, rgba(255,255,255,.055) 48%, rgba(255,255,255,.055) 49%, transparent 50%) 0 0/120px 120px;
     }
-    .btn {
-      flex: 1;
-      min-width: 110px;
-      text-align: center;
-      padding: 8px 12px;
-      border-radius: 10px;
-      text-decoration: none;
-      font-size: 0.78rem;
-      font-weight: 600;
-      transition: transform 0.1s ease;
+    .map-wrap::after { content: ""; position: absolute; z-index: -1; right: -14%; bottom: -20%; width: 42%; height: 74%; background: linear-gradient(140deg, #1e5f86, #173f67); border-radius: 48% 0 0 0; transform: rotate(-10deg); opacity: .75; }
+    .borough-label { position: absolute; color: rgba(255,247,232,.14); font-family: "Playfair Display", serif; font-style: italic; font-size: clamp(2rem, 5vw, 4rem); pointer-events: none; }
+    .manhattan { left: 8%; top: 46%; transform: rotate(-63deg); }
+    .brooklyn { right: 8%; bottom: 11%; }
+    #routeSvg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+    #routeLine { fill: none; stroke: var(--gold); stroke-width: 1.5; stroke-dasharray: 3 2; vector-effect: non-scaling-stroke; filter: drop-shadow(0 0 5px rgba(247,201,94,.45)); }
+    .marker { position: absolute; transform: translate(-50%,-50%); border: 0; background: transparent; cursor: pointer; padding: 0; text-align: center; z-index: 3; }
+    .marker-dot { display: grid; place-items: center; width: 43px; height: 43px; margin: auto; border-radius: 50%; font-size: 1.25rem; background: var(--panel-2); border: 2px solid rgba(255,255,255,.35); box-shadow: 0 8px 20px rgba(0,0,0,.28); transition: .2s ease; }
+    .marker-label { display: block; max-width: 120px; margin-top: 6px; padding: 4px 7px; border-radius: 7px; color: var(--cream); background: rgba(11,16,32,.78); font-size: .69rem; font-weight: 700; line-height: 1.2; }
+    .marker:hover .marker-dot, .marker.active .marker-dot { transform: scale(1.12); border-color: var(--gold); background: #29324b; }
+    .marker.visited .marker-dot { border-color: var(--rose); }
+    .vehicle { position: absolute; z-index: 7; display: grid; place-items: center; width: 48px; height: 48px; transform: translate(-50%,-50%); border-radius: 50%; background: var(--cream); box-shadow: 0 12px 28px rgba(0,0,0,.4), 0 0 0 5px rgba(247,201,94,.18); font-size: 1.7rem; transition: left 1.25s cubic-bezier(.34,1.35,.55,1), top 1.25s cubic-bezier(.34,1.35,.55,1); }
+    .map-card { display: flex; flex-direction: column; min-height: 610px; border: 1px solid var(--line); border-radius: 26px; background: linear-gradient(150deg, var(--panel-2), var(--panel)); box-shadow: var(--shadow); padding: 24px; }
+    .stop-count { color: var(--gold); font-size: .77rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+    .map-card .big-icon { font-size: 2.2rem; margin: 30px 0 8px; }
+    .map-card h2 { margin: 0; font-family: "Playfair Display", serif; font-size: 2rem; line-height: 1.06; }
+    .map-card .map-time { color: var(--rose); margin: 10px 0 18px; font-weight: 700; }
+    .map-card p { color: #d5dbea; line-height: 1.65; }
+    .map-card .transit { margin-bottom: 12px; }
+    .map-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: auto; padding-top: 24px; }
+    .action { border: 1px solid var(--line); border-radius: 12px; padding: 12px 10px; background: rgba(255,255,255,.05); cursor: pointer; }
+    .action.primary { background: var(--rose); color: #281226; border-color: var(--rose); font-weight: 700; }
+    .action:disabled { opacity: .4; cursor: not-allowed; }
+    .map-hint { grid-column: 1/-1; text-align: center; color: var(--muted); font-size: .78rem; }
+
+    @media (max-width: 780px) {
+      .shell { width: min(100% - 20px, 680px); padding-top: 18px; }
+      .hero { align-items: start; }
+      .trip-meta { display: none; }
+      .toolbar-inner { display: block; }
+      .view-toggle { width: fit-content; margin: 10px auto 0; }
+      .map-layout { grid-template-columns: 1fr; }
+      .map-wrap { min-height: 470px; }
+      .map-card { min-height: 0; }
+      .marker-label { max-width: 84px; font-size: .62rem; }
+      .marker-dot { width: 39px; height: 39px; }
     }
-    .btn:active { transform: scale(0.98); }
-    .btn-map { background: #2563eb; color: #ffffff; }
-    .btn-link { background: rgba(255, 255, 255, 0.1); color: var(--text); border: 1px solid var(--border); }
+    @media (max-width: 480px) {
+      .hero { margin-bottom: 12px; }
+      h1 { font-size: 2.35rem; }
+      .day-btn { padding: 9px 13px; }
+      .timeline { padding-left: 23px; }
+      .timeline::before { left: 5px; }
+      .card { padding: 18px; }
+      .card::before { left: -26px; }
+      .map-wrap { min-height: 430px; }
+      .map-actions { position: sticky; bottom: 8px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+    }
   </style>
 </head>
 <body>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <div class="eyebrow">September 15–19, 2026</div>
+        <h1>New York, <em>here I come.</em></h1>
+      </div>
+      <div class="trip-meta">Sheraton Times Square<br>Rail Symposium • Grand Central</div>
+    </header>
 
-  <header>
-    <div class="subtitle">September 2026</div>
-    <h1>❤️ NYC Itinerary</h1>
-  </header>
-
-  <!-- Navigation Tabs -->
-  <div class="tab-container">
-    <button class="tab-btn active" onclick="switchDay('tue', this)">Tue 9/15</button>
-    <button class="tab-btn" onclick="switchDay('wed', this)">Wed 9/16</button>
-    <button class="tab-btn" onclick="switchDay('thu', this)">Thu 9/17</button>
-    <button class="tab-btn" onclick="switchDay('fri', this)">Fri 9/18</button>
-    <button class="tab-btn" onclick="switchDay('sat', this)">Sat 9/19</button>
-  </div>
-
-  <!-- TUESDAY -->
-  <div id="tue" class="day-content active">
-    <div class="card">
-      <span class="time-tag">11:00 AM – 1:30 PM</span>
-      <h2 class="card-title">Land at JFK & Check-In</h2>
-      <div class="transit-info">✈️ AirTrain to Jamaica → LIRR to Penn Station → Taxi to Sheraton Times Square.</div>
-      <p class="description">Drop off luggage, freshen up, and grab lunch near the hotel.</p>
-      
-      <!-- Lunch Options -->
-      <div class="sub-section">
-        <div class="sub-title">🍽️ Lunch Option 1: The Consulate Midtown</div>
-        <p class="description">Elegant French-American bistro atmosphere.<br><b>Highlights:</b> Short Rib Cavatelli, Roasted Branzino, French Onion Soup & Steak Frites.</p>
-        <div class="link-group">
-          <a href="https://theconsulate.nyc/" target="_blank" class="btn btn-link">🌐 Website</a>
-          <a href="https://postmates.com/store/the-consulate-midtown/_OIDUsAuX4um1vs50cQWJg" target="_blank" class="btn btn-link">📖 Menu</a>
-          <a href="https://maps.google.com/?q=The+Consulate+Midtown+NYC" target="_blank" class="btn btn-map">📍 Map</a>
+    <nav class="toolbar" aria-label="Itinerary controls">
+      <div class="toolbar-inner">
+        <div class="days" role="tablist" aria-label="Trip days" id="dayTabs"></div>
+        <div class="view-toggle" aria-label="Choose itinerary view">
+          <button class="view-btn" id="mapToggle" aria-pressed="true">🗺️ Map</button>
+          <button class="view-btn" id="listToggle" aria-pressed="false">☰ Timeline</button>
         </div>
       </div>
+    </nav>
 
-      <div class="sub-section">
-        <div class="sub-title">🍜 Lunch Option 2: Ippudo Westside</div>
-        <p class="description">World-class Japanese ramen spot.<br><b>Highlights:</b> Shiromaru Motoaji Tonkotsu Ramen, Hirata Pork Buns & Chicken Kara-age.</p>
-        <div class="link-group">
-          <a href="https://ippudony.com/" target="_blank" class="btn btn-link">🌐 Website</a>
-          <a href="http://places.singleplatform.com/ippudo-westside/menu" target="_blank" class="btn btn-link">📖 Menu</a>
-          <a href="https://maps.google.com/?q=Ippudo+Westside+NYC" target="_blank" class="btn btn-map">📍 Map</a>
+    <section id="mapView" class="view" aria-label="Interactive trip map">
+      <div class="map-layout">
+        <div class="map-wrap" id="map">
+          <span class="borough-label manhattan">Manhattan</span>
+          <span class="borough-label brooklyn">Brooklyn</span>
+          <svg id="routeSvg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <polyline id="routeLine" points=""></polyline>
+          </svg>
+          <div id="markers"></div>
+          <div class="vehicle" id="vehicle" aria-hidden="true">🚕</div>
         </div>
+        <article class="map-card" aria-live="polite">
+          <div class="stop-count" id="stopCount"></div>
+          <div class="big-icon" id="mapIcon"></div>
+          <h2 id="mapTitle"></h2>
+          <div class="map-time" id="mapTime"></div>
+          <p id="mapDescription"></p>
+          <div class="transit" id="mapTransit" hidden></div>
+          <div class="badges" id="mapBadges"></div>
+          <div class="links" id="mapLinks"></div>
+          <div class="map-actions">
+            <button class="action" id="prevStop">← Previous</button>
+            <button class="action primary" id="nextStop">Next stop →</button>
+            <div class="map-hint">Tap any map marker to jump to that stop.</div>
+          </div>
+        </article>
       </div>
-    </div>
-    
-    <div class="card">
-      <span class="time-tag">3:00 PM – 4:30 PM</span>
-      <h2 class="card-title">Midtown Landmarks Tour</h2>
-      <div class="transit-info">🚶 Walk down Fifth Avenue.</div>
-      <p class="description">Explore iconic landmarks, including Bryant Park, NY Public Library, Chrysler Building exterior, and Grand Central Concourse.</p>
-      
-      <div class="sub-section">
-        <div class="sub-title">📍 Nearby Added Landmarks</div>
-        <div class="link-group" style="margin-top: 8px;">
-          <a href="https://maps.google.com/?q=Rockefeller+Center+NYC" target="_blank" class="btn btn-link">🏙️ Rockefeller Center</a>
-          <a href="https://maps.google.com/?q=Top+of+the+Rock+Observation+Deck" target="_blank" class="btn btn-link">🔭 Top of the Rock</a>
-          <a href="https://maps.google.com/?q=Radio+City+Music+Hall" target="_blank" class="btn btn-link">📻 Radio City</a>
-          <a href="https://maps.google.com/?q=St.+Patricks+Cathedral+NYC" target="_blank" class="btn btn-link">⛪ St. Patrick's</a>
-        </div>
-      </div>
-    </div>
+    </section>
 
-    <div class="card">
-      <span class="time-tag">5:00 PM Onward</span>
-      <h2 class="card-title">The Campbell & Evening Drinks</h2>
-      <div class="special-badge">🍸 Historic Lounge</div>
-      <p class="description">Meet Leonard & Bruce at The Campbell tucked inside Grand Central. Move to Grand Brasserie for dinner if desired.</p>
-      <div class="link-group">
-        <a href="https://maps.google.com/?q=The+Campbell+Grand+Central" target="_blank" class="btn btn-map">📍 Map</a>
-        <a href="https://www.thecampbellnyc.com/" target="_blank" class="btn btn-link">🌐 Menu & Site</a>
-      </div>
-    </div>
-  </div>
-
-  <!-- WEDNESDAY -->
-  <div id="wed" class="day-content">
-    <div class="card">
-      <span class="time-tag">7:00 AM – 4:00 PM</span>
-      <h2 class="card-title">Symposium at Grand Central</h2>
-      <div class="transit-info">🚕 Taxi/Uber from Sheraton (~15 mins).</div>
-      <p class="description">Full day conference with lunch provided.</p>
-    </div>
-
-    <div class="card">
-      <span class="time-tag">4:00 PM – 7:15 PM</span>
-      <h2 class="card-title">Decompress & Added Sights</h2>
-      <p class="description">Unwind at Grand Brasserie, check out Grand Central Market, and view the Chrysler Building lobby.</p>
-    </div>
-
-    <div class="card">
-      <span class="time-tag">7:30 PM – 9:00 PM</span>
-      <h2 class="card-title">SUMMIT One Vanderbilt</h2>
-      <div class="special-badge">🎟️ RESERVED • Nighttime Views</div>
-      <div class="transit-info">🚶 Connected to Grand Central.</div>
-      <p class="description">Immersive glass observatory experience overlooking Manhattan.</p>
-      <div class="link-group">
-        <a href="https://maps.google.com/?q=SUMMIT+One+Vanderbilt" target="_blank" class="btn btn-map">📍 Map</a>
-      </div>
-    </div>
-
-    <div class="card">
-      <span class="time-tag">9:00 PM</span>
-      <h2 class="card-title">Low-Key Dinner & Wine Suggestions</h2>
-      
-      <div class="sub-section">
-        <div class="sub-title">🍷 Option 1: Quality Bistro</div>
-        <p class="description">Glamorous French dining room near hotel.<br><b>Food:</b> Steak Frites or Prime Dry-Aged Ribeye.<br><b>Wine Pairing:</b> Left Bank Bordeaux or Napa Cabernet Sauvignon.</p>
-        <div class="link-group">
-          <a href="https://www.qualitybistro.com/" target="_blank" class="btn btn-link">🌐 Website</a>
-          <a href="https://www.qualitybistro.com/menus/" target="_blank" class="btn btn-link">📖 Menu</a>
-          <a href="https://maps.google.com/?q=Quality+Bistro+NYC" target="_blank" class="btn btn-map">📍 Map</a>
-        </div>
-      </div>
-
-      <div class="sub-section">
-        <div class="sub-title">🍇 Option 2: Aldo Sohm Wine Bar</div>
-        <p class="description">Laid-back, chic lounge by Le Bernardin's chef sommelier.<br><b>Food:</b> Charcuterie & Cheese, Baked Camembert & Skirt Steak.<br><b>Wine Pairing:</b> Austrian Grüner Veltliner or Pinot Noir.</p>
-        <div class="link-group">
-          <a href="https://www.aldosohmwinebar.com/" target="_blank" class="btn btn-link">🌐 Website</a>
-          <a href="https://www.aldosohmwinebar.com/menus/" target="_blank" class="btn btn-link">📖 Menu</a>
-          <a href="https://maps.google.com/?q=Aldo+Sohm+Wine+Bar" target="_blank" class="btn btn-map">📍 Map</a>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- THURSDAY -->
-  <div id="thu" class="day-content">
-    <div class="card">
-      <span class="time-tag">7:00 AM – 4:00 PM</span>
-      <h2 class="card-title">Symposium at Grand Central</h2>
-      <p class="description">Day 2 presentation and conference sessions.</p>
-    </div>
-
-    <div class="card">
-      <span class="time-tag">4:15 PM – 5:45 PM</span>
-      <h2 class="card-title">Oscar Wilde Happy Hour</h2>
-      <div class="special-badge">🥂 Happy Hour Specials</div>
-      <div class="transit-info">🚇 N/R/W Subway from 42nd St to 28th St (~10 mins) or Taxi.</div>
-      <p class="description">Victorian decor featuring NYC's longest continuous bar counter.</p>
-      <div class="link-group">
-        <a href="https://maps.google.com/?q=Oscar+Wilde+NYC" target="_blank" class="btn btn-map">📍 Map</a>
-      </div>
-    </div>
-
-    <div class="card">
-      <span class="time-tag">8:00 PM</span>
-      <h2 class="card-title">Refinery Rooftop</h2>
-      <div class="special-badge">🍸 Empire State Views</div>
-      <p class="description">Polished rooftop lounge with direct skyline views.</p>
-      <div class="link-group">
-        <a href="https://maps.google.com/?q=Refinery+Rooftop" target="_blank" class="btn btn-map">📍 Map</a>
-      </div>
-    </div>
-  </div>
-
-  <!-- FRIDAY -->
-  <div id="fri" class="day-content">
-    <div class="card">
-      <span class="time-tag">6:30 AM – 7:45 AM</span>
-      <h2 class="card-title">Central Park Run</h2>
-      <p class="description">4–5 mile sightseeing run covering Columbus Circle, The Mall, and Bethesda Fountain.</p>
-    </div>
-
-    <div class="card">
-      <span class="time-tag">2:30 PM – 6:15 PM</span>
-      <h2 class="card-title">The Metropolitan Museum of Art</h2>
-      <div class="special-badge">🍷 5:00 PM Date Night 2-for-1 Drinks</div>
-      <p class="description">Prioritize Temple of Dendur and European Paintings before catching 2-for-1 drinks on the Great Hall balcony.</p>
-      <div class="link-group">
-        <a href="https://maps.google.com/?q=The+Metropolitan+Museum+of+Art" target="_blank" class="btn btn-map">📍 Map</a>
-      </div>
-    </div>
-
-    <div class="card">
-      <span class="time-tag">6:30 PM – 7:45 PM</span>
-      <h2 class="card-title">The Morgan Library</h2>
-      <div class="special-badge">🎟️ Free Friday Admission</div>
-      <div class="transit-info">🚇 4/5 Express Subway from 86th St to Grand Central (~12 mins).</div>
-      <p class="description">Explore Pierpont Morgan's iconic historic library hall.</p>
-      <div class="link-group">
-        <a href="https://maps.google.com/?q=The+Morgan+Library+%26+Museum" target="_blank" class="btn btn-map">📍 Map</a>
-      </div>
-    </div>
-
-    <div class="card">
-      <span class="time-tag">8:00 PM</span>
-      <h2 class="card-title">Dress-Up Dinner & Alternate Option</h2>
-      
-      <div class="sub-section">
-        <div class="sub-title">✨ Primary Choice: Ci Siamo</div>
-        <p class="description">Trendy Italian spot in Manhattan West.<br><b>Highlights:</b> Live-fire cooking, Cavatelli with Crab, Wood-Fired Strachy & Pork Chop.</p>
-        <div class="link-group">
-          <a href="https://www.cisiamonyc.com/" target="_blank" class="btn btn-link">🌐 Website</a>
-          <a href="https://www.cisiamonyc.com/menus/" target="_blank" class="btn btn-link">📖 Menu</a>
-          <a href="https://maps.google.com/?q=Ci+Siamo+NYC" target="_blank" class="btn btn-map">📍 Map</a>
-        </div>
-      </div>
-
-      <div class="sub-section">
-        <div class="sub-title">🥂 Alternate Option: Cecconi's NoMad</div>
-        <p class="description">Fashionable Italian atmosphere with luxury interiors and handmade pasta.</p>
-        <div class="link-group">
-          <a href="https://maps.google.com/?q=Cecconis+NoMad" target="_blank" class="btn btn-map">📍 Map</a>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- SATURDAY -->
-  <div id="sat" class="day-content">
-    <div class="card">
-      <span class="time-tag">8:30 AM – 12:00 PM</span>
-      <h2 class="card-title">DUMBO & Brooklyn Waterfront</h2>
-      <div class="transit-info">🚇 F Train from Rockefeller Ctr to York St OR Taxi to DUMBO.</div>
-      <p class="description">Washington St Manhattan Bridge view, Pebble Beach, Jane's Carousel, and Brooklyn Bridge Park.</p>
-      <div class="link-group">
-        <a href="https://maps.google.com/?q=DUMBO+Brooklyn" target="_blank" class="btn btn-map">📍 Map</a>
-      </div>
-    </div>
-
-    <div class="card">
-      <span class="time-tag">12:00 PM – 1:15 PM</span>
-      <h2 class="card-title">Pizza & Wine Lunch Spots</h2>
-      
-      <div class="sub-section">
-        <div class="sub-title">🍕 Option 1: Juliana's Pizza</div>
-        <p class="description">Iconic coal-fired pizza by Brooklyn legend Patsy Grimaldi.<br><b>Highlights:</b> Classic Margherita or White Pizza.<br><b>Pairing:</b> Chianti Classico or Pinot Grigio.</p>
-        <div class="link-group">
-          <a href="https://julianaspizza.com/" target="_blank" class="btn btn-link">🌐 Website & Menu</a>
-          <a href="https://maps.google.com/?q=Julianas+Pizza+DUMBO" target="_blank" class="btn btn-map">📍 Map</a>
-        </div>
-      </div>
-
-      <div class="sub-section">
-        <div class="sub-title">🍷 Option 2: Cecconi's DUMBO</div>
-        <p class="description">Glamorous waterfront Italian with NYC skyline views.<br><b>Highlights:</b> Black Truffle & Goat Cheese Pizza.<br><b>Pairing:</b> Sangiovese or Nebbiolo.</p>
-        <div class="link-group">
-          <a href="https://www.cecconisdumbo.com/" target="_blank" class="btn btn-link">🌐 Website</a>
-          <a href="https://www.cecconisdumbo.com/en/menus" target="_blank" class="btn btn-link">📖 Menu</a>
-          <a href="https://maps.google.com/?q=Cecconis+DUMBO" target="_blank" class="btn btn-map">📍 Map</a>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <span class="time-tag">2:45 PM</span>
-      <h2 class="card-title">Airport Departure</h2>
-      <div class="transit-info">🚕 Taxi to Penn Station → LIRR to Jamaica → AirTrain to JFK Terminal.</div>
-      <p class="description">Head to JFK for your 6:51 PM flight.</p>
-    </div>
-  </div>
+    <section id="listView" class="view" hidden aria-label="Timeline itinerary">
+      <div class="day-intro"><h2 id="dayHeading"></h2><span id="daySummary"></span></div>
+      <div class="timeline" id="timeline"></div>
+    </section>
+  </main>
 
   <script>
-    function switchDay(dayId, btn) {
-      document.querySelectorAll('.day-content').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-      document.getElementById(dayId).classList.add('active');
-      btn.classList.add('active');
+    const trip = {
+      tue: {
+        tab: "Tue 9/15", title: "Arrival Day", summary: "Touch down, settle in, and meet the team.",
+        stops: [
+          {time:"11:00 AM – 1:30 PM",title:"Land at JFK & Check-In",icon:"✈️",mode:"plane",x:90,y:82,description:"Land at JFK, travel into Manhattan, drop off your luggage at the Sheraton Times Square, freshen up, and have lunch nearby.",transit:"AirTrain to Jamaica → LIRR to Penn Station → taxi to the Sheraton.",badges:["Arrival","Hotel check-in"],options:[
+            {title:"The Consulate Midtown",text:"Elegant French-American bistro. Try the French onion soup, steak frites or roasted branzino.",links:[website("https://theconsulate.nyc/"),menu("https://postmates.com/store/the-consulate-midtown/_OIDUsAuX4um1vs50cQWJg"),map("https://maps.google.com/?q=The+Consulate+Midtown+NYC")]},
+            {title:"Ippudo Westside",text:"World-class ramen. Try the Shiromaru Motoaji, pork buns or chicken kara-age.",links:[website("https://ippudony.com/"),menu("http://places.singleplatform.com/ippudo-westside/menu"),map("https://maps.google.com/?q=Ippudo+Westside+NYC")]}
+          ]},
+          {time:"3:00 PM – 4:30 PM",title:"Midtown Landmarks Tour",icon:"🏙️",mode:"walk",x:39,y:28,description:"Walk Fifth Avenue for Bryant Park, the New York Public Library, Rockefeller Center, Radio City, St. Patrick’s Cathedral, the Chrysler Building exterior and Grand Central.",transit:"An easy first-day walk through Midtown.",badges:["Free","Photo spots"],links:[map("https://maps.google.com/?q=Bryant+Park+NYC")]},
+          {time:"5:00 PM onward",title:"The Campbell & Evening Drinks",icon:"🍸",mode:"taxi",x:51,y:38,description:"Meet Leonard and Bruce at The Campbell inside Grand Central. Move to Grand Brasserie for dinner if everyone wants to stay.",badges:["Historic lounge","Flexible"],links:[website("https://www.thecampbellnyc.com/"),map("https://maps.google.com/?q=The+Campbell+Grand+Central")]}
+        ]
+      },
+      wed: {
+        tab:"Wed 9/16",title:"Presentation Day One",summary:"Workday, Grand Central discoveries, and skyline views.",
+        stops:[
+          {time:"7:00 AM – 4:00 PM",title:"Rail Symposium",icon:"🎤",mode:"taxi",x:51,y:38,description:"Full presentation and conference day at Grand Central Terminal. Lunch is included.",transit:"Taxi or Uber from the Sheraton; allow about 20 minutes.",badges:["Work","Lunch included"]},
+          {time:"4:00 PM – 7:15 PM",title:"Decompress at Grand Central",icon:"🥂",mode:"walk",x:49,y:41,description:"Unwind at Grand Brasserie, browse Grand Central Market, see the Whispering Gallery, and view the Chrysler Building lobby.",badges:["Flexible","Grand Central"]},
+          {time:"7:30 PM – 9:00 PM",title:"SUMMIT One Vanderbilt",icon:"🌃",mode:"walk",x:53,y:37,description:"An immersive glass observatory experience with dramatic nighttime views over Manhattan.",transit:"Connected directly to Grand Central.",badges:["Reserved","Night views"],links:[map("https://maps.google.com/?q=SUMMIT+One+Vanderbilt")]},
+          {time:"9:00 PM",title:"Low-Key Dinner & Wine",icon:"🍷",mode:"taxi",x:36,y:24,description:"Finish the night close to the hotel with French food or a relaxed wine bar.",options:[
+            {title:"Quality Bistro",text:"Glamorous French dining room. Steak frites or dry-aged ribeye with Bordeaux or Cabernet.",links:[website("https://www.qualitybistro.com/"),menu("https://www.qualitybistro.com/menus/"),map("https://maps.google.com/?q=Quality+Bistro+NYC")]},
+            {title:"Aldo Sohm Wine Bar",text:"Chic, relaxed wine lounge. Charcuterie, baked Camembert or skirt steak with Grüner Veltliner or Pinot Noir.",links:[website("https://www.aldosohmwinebar.com/"),menu("https://www.aldosohmwinebar.com/menus/"),map("https://maps.google.com/?q=Aldo+Sohm+Wine+Bar")]}
+          ]}
+        ]
+      },
+      thu: {
+        tab:"Thu 9/17",title:"Presentation Day Two",summary:"Finish strong, then celebrate above the city.",
+        stops:[
+          {time:"7:00 AM – 4:00 PM",title:"Rail Symposium",icon:"🎤",mode:"taxi",x:51,y:38,description:"Day two presentation and conference sessions at Grand Central Terminal.",badges:["Work","Lunch included"]},
+          {time:"4:15 PM – 5:45 PM",title:"Oscar Wilde Happy Hour",icon:"🥂",mode:"subway",x:43,y:57,description:"Enjoy the theatrical Victorian decor and happy-hour cocktails at NYC’s famously extravagant bar.",transit:"N/R/W from 42nd Street to 28th Street, or take a taxi.",badges:["Happy hour","Photo spot"],links:[map("https://maps.google.com/?q=Oscar+Wilde+NYC")]},
+          {time:"8:00 PM",title:"Refinery Rooftop",icon:"🍸",mode:"taxi",x:43,y:45,description:"A polished rooftop lounge with a direct view of the Empire State Building.",badges:["Skyline views","Cocktails"],links:[map("https://maps.google.com/?q=Refinery+Rooftop")]}
+        ]
+      },
+      fri: {
+        tab:"Fri 9/18",title:"Art & Date-Night Energy",summary:"Run, museums, cocktails, and your dress-up dinner.",
+        stops:[
+          {time:"6:30 AM – 7:45 AM",title:"Central Park Run",icon:"🏃‍♀️",mode:"run",x:31,y:15,description:"A 4–5 mile sightseeing run from Columbus Circle through The Mall to Bethesda Fountain and back.",badges:["Free","4–5 miles"]},
+          {time:"2:30 PM – 5:45 PM",title:"The Metropolitan Museum of Art",icon:"🏛️",mode:"taxi",x:49,y:14,description:"Prioritize the Temple of Dendur and European Paintings, then enjoy the Great Hall balcony before leaving enough travel time for The Morgan.",badges:["Museum","Leave by 5:45"],links:[map("https://maps.google.com/?q=The+Metropolitan+Museum+of+Art")]},
+          {time:"6:30 PM – 7:45 PM",title:"The Morgan Library",icon:"📚",mode:"subway",x:51,y:51,description:"Explore Pierpont Morgan’s extraordinary historic library during its free Friday evening hours.",transit:"4/5 train from 86th Street to Grand Central, then walk south.",badges:["Free Friday","Reservation required"],links:[map("https://maps.google.com/?q=The+Morgan+Library+%26+Museum")]},
+          {time:"8:15 PM",title:"Dress-Up Dinner",icon:"✨",mode:"taxi",x:29,y:55,description:"End your biggest city day with a stylish Italian dinner at Manhattan West or NoMad.",badges:["Fancy dinner","Reserve"],options:[
+            {title:"Ci Siamo — Primary Choice",text:"Live-fire Italian cooking. Look for the cavatelli, wood-fired dishes and pork chop.",links:[website("https://www.cisiamonyc.com/"),menu("https://www.cisiamonyc.com/menus/"),map("https://maps.google.com/?q=Ci+Siamo+NYC")]},
+            {title:"Cecconi’s NoMad — Alternate",text:"Fashionable Italian atmosphere with luxurious interiors and handmade pasta.",links:[map("https://maps.google.com/?q=Cecconis+NoMad")]}
+          ]}
+        ]
+      },
+      sat: {
+        tab:"Sat 9/19",title:"Brooklyn Finale",summary:"Iconic bridge views, pizza, and the flight home.",
+        stops:[
+          {time:"8:30 AM – 12:00 PM",title:"DUMBO & Brooklyn Waterfront",icon:"🌉",mode:"subway",x:68,y:70,description:"See the Washington Street Manhattan Bridge view, Pebble Beach, Jane’s Carousel and Brooklyn Bridge Park.",transit:"F train from Rockefeller Center to York Street, or taxi to DUMBO.",badges:["Free","Photo spots"],links:[map("https://maps.google.com/?q=DUMBO+Brooklyn")]},
+          {time:"12:00 PM – 1:15 PM",title:"Pizza & Wine Lunch",icon:"🍕",mode:"walk",x:72,y:74,description:"Choose iconic coal-fired pizza or a glamorous waterfront Italian lunch.",options:[
+            {title:"Juliana’s Pizza",text:"Classic Margherita or white pizza, paired with Chianti Classico or Pinot Grigio.",links:[website("https://julianaspizza.com/"),map("https://maps.google.com/?q=Julianas+Pizza+DUMBO")]},
+            {title:"Cecconi’s DUMBO",text:"Waterfront Italian with skyline views. Try the black-truffle and goat-cheese pizza.",links:[website("https://www.cecconisdumbo.com/"),menu("https://www.cecconisdumbo.com/en/menus"),map("https://maps.google.com/?q=Cecconis+DUMBO")]}
+          ]},
+          {time:"2:45 PM",title:"Airport Departure",icon:"✈️",mode:"plane",x:90,y:82,description:"Collect your luggage and head to JFK for the 6:51 PM flight home.",transit:"Taxi to Penn Station → LIRR to Jamaica → AirTrain to your JFK terminal.",badges:["6:51 PM flight"]}
+        ]
+      }
+    };
+
+    function website(url){ return {label:"Website ↗",url}; }
+    function menu(url){ return {label:"Menu ↗",url}; }
+    function map(url){ return {label:"Map ↗",url}; }
+
+    let activeDay = "tue";
+    let activeStop = 0;
+
+    const tabs = document.getElementById("dayTabs");
+    const timeline = document.getElementById("timeline");
+    const markers = document.getElementById("markers");
+    const vehicle = document.getElementById("vehicle");
+
+    Object.entries(trip).forEach(([key, day], index) => {
+      const button = document.createElement("button");
+      button.className = "day-btn";
+      button.type = "button";
+      button.role = "tab";
+      button.textContent = day.tab;
+      button.dataset.day = key;
+      button.setAttribute("aria-selected", index === 0 ? "true" : "false");
+      button.addEventListener("click", () => selectDay(key));
+      tabs.appendChild(button);
+    });
+
+    function selectDay(key){
+      activeDay = key;
+      activeStop = 0;
+      document.querySelectorAll(".day-btn").forEach(btn => btn.setAttribute("aria-selected", String(btn.dataset.day === key)));
+      renderTimeline();
+      renderMap();
     }
+
+    function renderTimeline(){
+      const day = trip[activeDay];
+      document.getElementById("dayHeading").textContent = day.title;
+      document.getElementById("daySummary").textContent = day.summary;
+      timeline.innerHTML = day.stops.map(stop => `
+        <article class="card">
+          <div class="card-top">
+            <div>
+              <div class="time">${stop.time}</div>
+              <h3>${stop.title}</h3>
+            </div>
+            <div class="card-icon" aria-hidden="true">${stop.icon}</div>
+          </div>
+          <p class="description">${stop.description}</p>
+          ${stop.transit ? `<div class="transit">${modeIcon(stop.mode)} ${stop.transit}</div>` : ""}
+          ${badgesHtml(stop.badges)}
+          ${linksHtml(stop.links)}
+          ${optionsHtml(stop.options)}
+        </article>`).join("");
+    }
+
+    function renderMap(){
+      const day = trip[activeDay];
+      const points = day.stops.map(stop => `${stop.x},${stop.y}`).join(" ");
+      document.getElementById("routeLine").setAttribute("points", points);
+      markers.innerHTML = day.stops.map((stop,index) => `
+        <button class="marker ${index === activeStop ? "active" : ""} ${index < activeStop ? "visited" : ""}"
+          style="left:${stop.x}%;top:${stop.y}%" data-stop="${index}" aria-label="Open ${stop.title}">
+          <span class="marker-dot">${stop.icon}</span><span class="marker-label">${stop.title}</span>
+        </button>`).join("");
+      markers.querySelectorAll(".marker").forEach(btn => btn.addEventListener("click", () => showStop(Number(btn.dataset.stop))));
+      showStop(activeStop, false);
+    }
+
+    function showStop(index, animate = true){
+      const stops = trip[activeDay].stops;
+      activeStop = Math.max(0, Math.min(index, stops.length - 1));
+      const stop = stops[activeStop];
+      if (!animate) vehicle.style.transition = "none";
+      vehicle.style.left = `${stop.x}%`;
+      vehicle.style.top = `${stop.y}%`;
+      vehicle.textContent = modeIcon(stop.mode);
+      if (!animate) requestAnimationFrame(() => vehicle.style.transition = "");
+
+      document.querySelectorAll(".marker").forEach((marker,index) => {
+        marker.classList.toggle("active", index === activeStop);
+        marker.classList.toggle("visited", index < activeStop);
+      });
+      document.getElementById("stopCount").textContent = `${trip[activeDay].tab} • Stop ${activeStop + 1} of ${stops.length}`;
+      document.getElementById("mapIcon").textContent = stop.icon;
+      document.getElementById("mapTitle").textContent = stop.title;
+      document.getElementById("mapTime").textContent = stop.time;
+      document.getElementById("mapDescription").textContent = stop.description;
+      const transitEl = document.getElementById("mapTransit");
+      transitEl.hidden = !stop.transit;
+      transitEl.textContent = stop.transit ? `${modeIcon(stop.mode)} ${stop.transit}` : "";
+      document.getElementById("mapBadges").innerHTML = (stop.badges || []).map(b => `<span class="badge">${b}</span>`).join("");
+      const combinedLinks = [...(stop.links || []), ...((stop.options || []).flatMap(o => o.links || []))];
+      document.getElementById("mapLinks").innerHTML = linksHtml(combinedLinks);
+      document.getElementById("prevStop").disabled = activeStop === 0;
+      const next = document.getElementById("nextStop");
+      next.disabled = activeStop === stops.length - 1;
+      next.textContent = activeStop === stops.length - 1 ? "Day complete ✓" : "Next stop →";
+    }
+
+    function modeIcon(mode){ return ({plane:"✈️",walk:"🚶‍♀️",run:"🏃‍♀️",subway:"🚇",taxi:"🚕"})[mode] || "🚕"; }
+    function badgesHtml(items){ return items?.length ? `<div class="badges">${items.map(item => `<span class="badge">${item}</span>`).join("")}</div>` : ""; }
+    function linksHtml(items){
+      if (!items?.length) return "";
+      const unique = items.filter((item,index,array) => array.findIndex(other => other.url === item.url) === index);
+      return `<div class="links">${unique.map(item => `<a class="link" href="${item.url}" target="_blank" rel="noopener noreferrer">${item.label}</a>`).join("")}</div>`;
+    }
+    function optionsHtml(items){
+      if (!items?.length) return "";
+      return `<details><summary>Dining choices</summary>${items.map(item => `<div class="option"><strong>${item.title}</strong>${item.text}${linksHtml(item.links)}</div>`).join("")}</details>`;
+    }
+
+    document.getElementById("prevStop").addEventListener("click", () => showStop(activeStop - 1));
+    document.getElementById("nextStop").addEventListener("click", () => showStop(activeStop + 1));
+
+    const mapView = document.getElementById("mapView");
+    const listView = document.getElementById("listView");
+    const mapToggle = document.getElementById("mapToggle");
+    const listToggle = document.getElementById("listToggle");
+    function setView(view){
+      const isMap = view === "map";
+      mapView.hidden = !isMap;
+      listView.hidden = isMap;
+      mapToggle.setAttribute("aria-pressed", String(isMap));
+      listToggle.setAttribute("aria-pressed", String(!isMap));
+      localStorage.setItem("nyc-itinerary-view", view);
+    }
+    mapToggle.addEventListener("click", () => setView("map"));
+    listToggle.addEventListener("click", () => setView("list"));
+
+    renderTimeline();
+    renderMap();
+    setView(localStorage.getItem("nyc-itinerary-view") || "map");
   </script>
 </body>
 </html>
