@@ -4,422 +4,908 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#0b1020">
-  <meta name="description" content="Damaris's interactive September 2026 New York City itinerary.">
+  <meta name="description" content="Damaris and Alex's September 2026 New York City itinerary.">
   <title>NYC Trip • Interactive Itinerary</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+
   <style>
     :root {
-      --ink: #0b1020;
-      --panel: #11182b;
-      --panel-2: #182138;
-      --cream: #fff7e8;
-      --muted: #aab4ca;
-      --rose: #f39ac6;
-      --rose-deep: #cf5f9d;
-      --gold: #f7c95e;
-      --taxi: #ffd23f;
-      --blue: #6aa9ff;
-      --line: rgba(255,255,255,.12);
-      --shadow: 0 22px 60px rgba(0,0,0,.3);
+      --ink:#0b1020;
+      --panel:#11182b;
+      --panel-2:#182138;
+      --cream:#fff7e8;
+      --muted:#aab4ca;
+      --rose:#f39ac6;
+      --gold:#f7c95e;
+      --line:rgba(255,255,255,.12);
+      --shadow:0 22px 60px rgba(0,0,0,.3);
     }
-
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
     body {
-      margin: 0;
-      min-height: 100vh;
-      color: var(--cream);
-      font-family: "DM Sans", sans-serif;
+      margin:0;
+      min-height:100vh;
+      color:var(--cream);
+      font-family:"DM Sans",sans-serif;
       background:
-        radial-gradient(circle at 20% 0%, rgba(243,154,198,.14), transparent 28rem),
-        radial-gradient(circle at 85% 20%, rgba(106,169,255,.10), transparent 30rem),
+        radial-gradient(circle at 20% 0%,rgba(243,154,198,.14),transparent 28rem),
+        radial-gradient(circle at 85% 20%,rgba(106,169,255,.10),transparent 30rem),
         var(--ink);
     }
-    button, a { font: inherit; }
-    button { color: inherit; }
-    a { color: inherit; }
-    :focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
-
-    .shell { width: min(1180px, calc(100% - 32px)); margin: 0 auto; padding: 28px 0 60px; }
-    .hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
-    .eyebrow { color: var(--gold); font-size: .78rem; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; }
-    h1 { margin: 6px 0 0; font-family: "Playfair Display", serif; font-size: clamp(2.15rem, 6vw, 4.2rem); line-height: .98; letter-spacing: -.035em; }
-    h1 em { color: var(--rose); }
-    .trip-meta { color: var(--muted); text-align: right; line-height: 1.6; }
-
-    .toolbar { position: sticky; top: 0; z-index: 20; padding: 12px 0; background: linear-gradient(var(--ink) 70%, transparent); }
-    .toolbar-inner { display: flex; gap: 12px; justify-content: space-between; align-items: center; }
-    .days { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding: 2px; }
-    .days::-webkit-scrollbar { display: none; }
-    .day-btn, .view-btn {
-      border: 1px solid var(--line); background: rgba(255,255,255,.04); border-radius: 999px;
-      padding: 10px 16px; cursor: pointer; white-space: nowrap; transition: .2s ease;
+    button,a { font:inherit; color:inherit; }
+    button { cursor:pointer; }
+    :focus-visible { outline:3px solid var(--gold); outline-offset:3px; }
+    [hidden] { display:none !important; }
+    .shell { width:min(1180px,calc(100% - 32px)); margin:auto; padding:28px 0 60px; }
+    .hero { display:flex; align-items:flex-end; justify-content:space-between; gap:24px; margin-bottom:24px; }
+    .eyebrow { color:var(--gold); font-size:.78rem; font-weight:700; letter-spacing:.18em; text-transform:uppercase; }
+    h1 { margin:6px 0 0; font-family:"Playfair Display",serif; font-size:clamp(2.15rem,6vw,4.2rem); line-height:.98; letter-spacing:-.035em; }
+    h1 em { color:var(--rose); }
+    .trip-meta { color:var(--muted); text-align:right; line-height:1.6; }
+    .notice { border:1px solid rgba(247,201,94,.3); background:rgba(247,201,94,.06); border-radius:16px; padding:15px 18px; color:#e8dfca; line-height:1.6; }
+    .notice strong { color:var(--gold); }
+    .notice p { margin:8px 0 0; }
+    .notice summary { color:var(--gold); cursor:pointer; font-weight:700; }
+    .toolbar { position:sticky; top:0; z-index:20; padding:12px 0; background:linear-gradient(var(--ink) 70%,transparent); }
+    .toolbar-inner { display:flex; gap:12px; justify-content:space-between; align-items:center; }
+    .days { display:flex; gap:8px; overflow-x:auto; padding:2px; scrollbar-width:thin; }
+    .day-btn,.view-btn {
+      border:1px solid var(--line); background:rgba(255,255,255,.04);
+      border-radius:999px; padding:10px 16px; white-space:nowrap; transition:.2s ease;
     }
-    .day-btn:hover, .view-btn:hover { border-color: rgba(243,154,198,.6); transform: translateY(-1px); }
-    .day-btn[aria-selected="true"] { background: var(--cream); color: var(--ink); border-color: var(--cream); font-weight: 700; }
-    .view-toggle { display: flex; padding: 4px; border: 1px solid var(--line); border-radius: 999px; background: rgba(17,24,43,.85); }
-    .view-btn { border: 0; padding: 8px 13px; }
-    .view-btn[aria-pressed="true"] { background: var(--rose); color: #281226; font-weight: 700; }
-
-    .view { margin-top: 14px; }
-    .view[hidden] { display: none; }
-
-    /* Timeline */
-    .day-intro { display: flex; justify-content: space-between; align-items: end; margin: 24px 0 16px; }
-    .day-intro h2 { font-family: "Playfair Display", serif; font-size: 2rem; margin: 0; }
-    .day-intro span { color: var(--muted); }
-    .timeline { position: relative; display: grid; gap: 14px; padding-left: 32px; }
-    .timeline::before { content: ""; position: absolute; left: 10px; top: 18px; bottom: 18px; width: 2px; background: linear-gradient(var(--rose), var(--gold)); }
+    .day-btn:hover,.view-btn:hover { border-color:var(--rose); transform:translateY(-1px); }
+    .day-btn[aria-pressed="true"] { background:var(--cream); color:var(--ink); border-color:var(--cream); font-weight:700; }
+    .view-toggle { display:flex; padding:4px; border:1px solid var(--line); border-radius:999px; background:var(--panel); }
+    .view-btn { border:0; padding:8px 13px; }
+    .view-btn[aria-pressed="true"] { background:var(--rose); color:#281226; font-weight:700; }
+    .day-intro { margin:20px 0 16px; }
+    .day-intro h2 { font-family:"Playfair Display",serif; font-size:2rem; margin:0 0 8px; }
+    .day-intro p { color:var(--muted); margin:0; line-height:1.6; }
+    .day-note { margin-top:12px; padding:12px 15px; border-left:3px solid var(--gold); background:rgba(247,201,94,.06); color:#e8dfca; line-height:1.6; }
+    .view { margin-top:14px; }
+    .timeline { position:relative; display:grid; gap:14px; padding-left:32px; }
+    .timeline::before { content:""; position:absolute; left:10px; top:18px; bottom:18px; width:2px; background:linear-gradient(var(--rose),var(--gold)); }
     .card {
-      position: relative; overflow: hidden; border: 1px solid var(--line); border-radius: 20px;
-      background: linear-gradient(145deg, rgba(24,33,56,.96), rgba(14,20,36,.96)); box-shadow: 0 10px 35px rgba(0,0,0,.15);
-      padding: 22px; transition: transform .2s ease, border-color .2s ease;
+      position:relative; border:1px solid var(--line); border-radius:20px;
+      background:linear-gradient(145deg,rgba(24,33,56,.96),rgba(14,20,36,.96));
+      box-shadow:0 10px 35px rgba(0,0,0,.15); padding:22px;
     }
-    .card:hover { transform: translateY(-2px); border-color: rgba(243,154,198,.35); }
-    .card::before { content: ""; position: absolute; width: 15px; height: 15px; left: -30px; top: 25px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 5px var(--ink); }
-    .card-top { display: flex; justify-content: space-between; gap: 14px; align-items: start; }
-    .card-icon { display: grid; place-items: center; flex: 0 0 auto; width: 48px; height: 48px; font-size: 1.55rem; border-radius: 15px; background: rgba(243,154,198,.13); }
-    .time { color: var(--gold); text-transform: uppercase; letter-spacing: .09em; font-size: .78rem; font-weight: 700; }
-    .card h3 { margin: 4px 0 9px; font-size: 1.28rem; }
-    .description { color: #d4daea; line-height: 1.65; margin: 0; }
-    .transit { margin: 14px 0 0; padding: 11px 13px; border-left: 2px solid var(--rose); background: rgba(255,255,255,.035); color: var(--muted); border-radius: 0 9px 9px 0; }
-    .badges { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14px; }
-    .badge { border: 1px solid rgba(243,154,198,.28); background: rgba(243,154,198,.1); color: #ffd0e7; border-radius: 999px; padding: 5px 9px; font-size: .76rem; font-weight: 700; }
-    details { margin-top: 15px; border-top: 1px solid var(--line); padding-top: 13px; }
-    summary { cursor: pointer; color: var(--gold); font-weight: 700; }
-    .option { padding: 12px 0; color: #d7ddeb; line-height: 1.55; }
-    .option + .option { border-top: 1px dashed var(--line); }
-    .option strong { color: white; display: block; margin-bottom: 4px; }
-    .links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
-    .link { text-decoration: none; border: 1px solid var(--line); background: rgba(255,255,255,.05); border-radius: 10px; padding: 8px 11px; font-size: .85rem; }
-    .link:hover { border-color: var(--rose); background: rgba(243,154,198,.09); }
-
-    /* Map */
-    .map-layout { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(300px, .7fr); gap: 16px; margin-top: 18px; }
-    .map-wrap { position: relative; min-height: 610px; overflow: hidden; border: 1px solid var(--line); border-radius: 26px; background: #111a2e; box-shadow: var(--shadow); isolation: isolate; }
+    .card::before { content:""; position:absolute; width:13px; height:13px; left:-29px; top:25px; border-radius:50%; background:var(--gold); box-shadow:0 0 0 5px var(--ink); }
+    .card-top { display:flex; justify-content:space-between; gap:14px; align-items:flex-start; }
+    .card-icon { display:grid; place-items:center; flex:0 0 auto; width:48px; height:48px; font-size:1.55rem; border-radius:15px; background:rgba(243,154,198,.13); }
+    .time { color:var(--gold); text-transform:uppercase; letter-spacing:.07em; font-size:.78rem; font-weight:700; }
+    .card h3 { margin:4px 0 9px; font-size:1.28rem; }
+    .description { color:#d4daea; line-height:1.65; margin:0; }
+    .transit { margin-top:14px; padding:11px 13px; border-left:2px solid var(--rose); background:rgba(255,255,255,.035); color:var(--muted); border-radius:0 9px 9px 0; line-height:1.6; }
+    .badges { display:flex; flex-wrap:wrap; gap:7px; margin-top:14px; }
+    .badge { border:1px solid rgba(243,154,198,.28); background:rgba(243,154,198,.1); color:#ffd0e7; border-radius:999px; padding:5px 9px; font-size:.76rem; font-weight:700; }
+    .badge.warning { color:var(--gold); border-color:rgba(247,201,94,.4); background:rgba(247,201,94,.08); }
+    .choices { margin-top:15px; border-top:1px solid var(--line); padding-top:13px; }
+    .choices summary { cursor:pointer; color:var(--gold); font-weight:700; }
+    .option { padding:12px 0; color:#d7ddeb; line-height:1.55; }
+    .option + .option { border-top:1px dashed var(--line); }
+    .option strong { color:white; display:block; margin-bottom:4px; }
+    .links { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+    .link { text-decoration:none; border:1px solid var(--line); background:rgba(255,255,255,.05); border-radius:10px; padding:8px 11px; font-size:.85rem; overflow-wrap:anywhere; }
+    .link:hover { border-color:var(--rose); background:rgba(243,154,198,.09); }
+    .map-layout { display:grid; grid-template-columns:minmax(0,1.6fr) minmax(300px,.7fr); gap:16px; }
+    .map-wrap { position:relative; min-height:650px; overflow:hidden; border:1px solid var(--line); border-radius:26px; background:#111a2e; box-shadow:var(--shadow); isolation:isolate; }
     .map-wrap::before {
-      content: ""; position: absolute; inset: 0; opacity: .55; z-index: -2;
+      content:""; position:absolute; inset:0; opacity:.55; z-index:-2;
       background:
-        linear-gradient(62deg, transparent 47%, rgba(255,255,255,.07) 48%, rgba(255,255,255,.07) 49%, transparent 50%) 0 0/95px 95px,
-        linear-gradient(-28deg, transparent 47%, rgba(255,255,255,.055) 48%, rgba(255,255,255,.055) 49%, transparent 50%) 0 0/120px 120px;
+        linear-gradient(62deg,transparent 47%,rgba(255,255,255,.07) 48%,rgba(255,255,255,.07) 49%,transparent 50%) 0 0/95px 95px,
+        linear-gradient(-28deg,transparent 47%,rgba(255,255,255,.055) 48%,rgba(255,255,255,.055) 49%,transparent 50%) 0 0/120px 120px;
     }
-    .map-wrap::after { content: ""; position: absolute; z-index: -1; right: -14%; bottom: -20%; width: 42%; height: 74%; background: linear-gradient(140deg, #1e5f86, #173f67); border-radius: 48% 0 0 0; transform: rotate(-10deg); opacity: .75; }
-    .borough-label { position: absolute; color: rgba(255,247,232,.14); font-family: "Playfair Display", serif; font-style: italic; font-size: clamp(2rem, 5vw, 4rem); pointer-events: none; }
-    .manhattan { left: 8%; top: 46%; transform: rotate(-63deg); }
-    .brooklyn { right: 8%; bottom: 11%; }
-    #routeSvg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-    #routeLine { fill: none; stroke: var(--gold); stroke-width: 1.5; stroke-dasharray: 3 2; vector-effect: non-scaling-stroke; filter: drop-shadow(0 0 5px rgba(247,201,94,.45)); }
-    .marker { position: absolute; transform: translate(-50%,-50%); border: 0; background: transparent; cursor: pointer; padding: 0; text-align: center; z-index: 3; }
-    .marker-dot { display: grid; place-items: center; width: 43px; height: 43px; margin: auto; border-radius: 50%; font-size: 1.25rem; background: var(--panel-2); border: 2px solid rgba(255,255,255,.35); box-shadow: 0 8px 20px rgba(0,0,0,.28); transition: .2s ease; }
-    .marker-label { display: block; max-width: 120px; margin-top: 6px; padding: 4px 7px; border-radius: 7px; color: var(--cream); background: rgba(11,16,32,.78); font-size: .69rem; font-weight: 700; line-height: 1.2; }
-    .marker:hover .marker-dot, .marker.active .marker-dot { transform: scale(1.12); border-color: var(--gold); background: #29324b; }
-    .marker.visited .marker-dot { border-color: var(--rose); }
-    .vehicle { position: absolute; z-index: 7; display: grid; place-items: center; width: 48px; height: 48px; transform: translate(-50%,-50%); border-radius: 50%; background: var(--cream); box-shadow: 0 12px 28px rgba(0,0,0,.4), 0 0 0 5px rgba(247,201,94,.18); font-size: 1.7rem; transition: left 1.25s cubic-bezier(.34,1.35,.55,1), top 1.25s cubic-bezier(.34,1.35,.55,1); }
-    .map-card { display: flex; flex-direction: column; min-height: 610px; border: 1px solid var(--line); border-radius: 26px; background: linear-gradient(150deg, var(--panel-2), var(--panel)); box-shadow: var(--shadow); padding: 24px; }
-    .stop-count { color: var(--gold); font-size: .77rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
-    .map-card .big-icon { font-size: 2.2rem; margin: 30px 0 8px; }
-    .map-card h2 { margin: 0; font-family: "Playfair Display", serif; font-size: 2rem; line-height: 1.06; }
-    .map-card .map-time { color: var(--rose); margin: 10px 0 18px; font-weight: 700; }
-    .map-card p { color: #d5dbea; line-height: 1.65; }
-    .map-card .transit { margin-bottom: 12px; }
-    .map-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: auto; padding-top: 24px; }
-    .action { border: 1px solid var(--line); border-radius: 12px; padding: 12px 10px; background: rgba(255,255,255,.05); cursor: pointer; }
-    .action.primary { background: var(--rose); color: #281226; border-color: var(--rose); font-weight: 700; }
-    .action:disabled { opacity: .4; cursor: not-allowed; }
-    .map-hint { grid-column: 1/-1; text-align: center; color: var(--muted); font-size: .78rem; }
-
-    @media (max-width: 780px) {
-      .shell { width: min(100% - 20px, 680px); padding-top: 18px; }
-      .hero { align-items: start; }
-      .trip-meta { display: none; }
-      .toolbar-inner { display: block; }
-      .view-toggle { width: fit-content; margin: 10px auto 0; }
-      .map-layout { grid-template-columns: 1fr; }
-      .map-wrap { min-height: 470px; }
-      .map-card { min-height: 0; }
-      .marker-label { max-width: 84px; font-size: .62rem; }
-      .marker-dot { width: 39px; height: 39px; }
+    .map-wrap::after { content:""; position:absolute; z-index:-1; right:-14%; bottom:-20%; width:42%; height:74%; background:linear-gradient(140deg,#1e5f86,#173f67); border-radius:48% 0 0 0; transform:rotate(-10deg); opacity:.75; }
+    .borough-label { position:absolute; color:rgba(255,247,232,.14); font-family:"Playfair Display",serif; font-style:italic; font-size:clamp(2rem,5vw,4rem); pointer-events:none; }
+    .manhattan { left:8%; top:46%; transform:rotate(-63deg); }
+    .brooklyn { right:7%; bottom:14%; }
+    #routeSvg { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+    #routeLine { fill:none; stroke:var(--gold); stroke-width:2; stroke-dasharray:5 5; vector-effect:non-scaling-stroke; }
+    .marker { position:absolute; transform:translate(-50%,-50%); border:0; background:transparent; padding:0; text-align:center; z-index:3; }
+    .marker-dot { display:grid; place-items:center; width:43px; height:43px; margin:auto; border-radius:50%; font-size:1.15rem; background:var(--panel-2); border:2px solid rgba(255,255,255,.35); box-shadow:0 8px 20px rgba(0,0,0,.28); }
+    .marker-label { display:block; max-width:105px; margin-top:6px; padding:4px 7px; border-radius:7px; background:rgba(11,16,32,.88); font-size:.69rem; font-weight:700; line-height:1.2; }
+    .marker:hover .marker-dot,.marker.active .marker-dot { border-color:var(--gold); background:#29324b; }
+    .marker.active { z-index:5; }
+    .vehicle { position:absolute; z-index:6; pointer-events:none; display:grid; place-items:center; width:44px; height:44px; transform:translate(-50%,-50%); border-radius:50%; background:var(--cream); box-shadow:0 0 0 4px rgba(247,201,94,.18); font-size:1.5rem; transition:left .7s ease,top .7s ease; }
+    .map-card { display:flex; flex-direction:column; min-height:650px; min-width:0; border:1px solid var(--line); border-radius:26px; background:linear-gradient(150deg,var(--panel-2),var(--panel)); box-shadow:var(--shadow); padding:24px; }
+    .stop-count { color:var(--gold); font-size:.77rem; font-weight:700; letter-spacing:.10em; text-transform:uppercase; }
+    .big-icon { font-size:2.2rem; margin:22px 0 8px; }
+    .map-card h3 { margin:0; font-family:"Playfair Display",serif; font-size:2rem; line-height:1.1; }
+    .map-time { color:var(--rose); margin:10px 0 18px; font-weight:700; }
+    .map-actions { display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-top:auto; padding-top:24px; }
+    .action { border:1px solid var(--line); border-radius:12px; padding:12px 10px; background:rgba(255,255,255,.05); }
+    .action.primary { background:var(--rose); color:#281226; border-color:var(--rose); font-weight:700; }
+    .action:disabled { opacity:.4; cursor:not-allowed; }
+    .map-hint { grid-column:1/-1; color:var(--muted); font-size:.78rem; text-align:center; line-height:1.5; }
+    footer { color:var(--muted); font-size:.8rem; line-height:1.7; margin-top:28px; }
+    @media(max-width:780px) {
+      .shell { width:calc(100% - 20px); padding-top:18px; }
+      .hero { align-items:flex-start; }
+      .trip-meta { display:none; }
+      .toolbar-inner { display:block; }
+      .view-toggle { width:fit-content; margin:10px auto 0; }
+      .map-layout { grid-template-columns:1fr; }
+      .map-wrap { min-height:540px; }
+      .map-card { min-height:0; }
+      .marker-label { max-width:78px; font-size:.62rem; }
+      .marker-dot { width:39px; height:39px; }
     }
-    @media (max-width: 480px) {
-      .hero { margin-bottom: 12px; }
-      h1 { font-size: 2.35rem; }
-      .day-btn { padding: 9px 13px; }
-      .timeline { padding-left: 23px; }
-      .timeline::before { left: 5px; }
-      .card { padding: 18px; }
-      .card::before { left: -26px; }
-      .map-wrap { min-height: 430px; }
-      .map-actions { position: sticky; bottom: 8px; }
+    @media(max-width:480px) {
+      h1 { font-size:2.35rem; }
+      .day-btn { padding:9px 13px; }
+      .card { padding:18px; }
+      .day-intro h2 { font-size:1.7rem; }
     }
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+    @media(prefers-reduced-motion:reduce) {
+      *,*::before,*::after { scroll-behavior:auto !important; transition:none !important; }
     }
   </style>
 </head>
+
 <body>
-  <main class="shell">
-    <header class="hero">
-      <div>
-        <div class="eyebrow">September 15–19, 2026</div>
-        <h1>New York, <em>here I come.</em></h1>
-      </div>
-      <div class="trip-meta">Sheraton Times Square<br>Rail Symposium • Grand Central</div>
-    </header>
+<main class="shell">
+  <header class="hero">
+    <div>
+      <div class="eyebrow">September 15–19, 2026</div>
+      <h1>New York, <em>here I come.</em></h1>
+    </div>
+    <div class="trip-meta">Damaris + Alex<br>Sheraton Times Square<br>All times Eastern</div>
+  </header>
 
-    <nav class="toolbar" aria-label="Itinerary controls">
-      <div class="toolbar-inner">
-        <div class="days" role="tablist" aria-label="Trip days" id="dayTabs"></div>
-        <div class="view-toggle" aria-label="Choose itinerary view">
-          <button class="view-btn" id="mapToggle" aria-pressed="true">🗺️ Map</button>
-          <button class="view-btn" id="listToggle" aria-pressed="false">☰ Timeline</button>
-        </div>
-      </div>
-    </nav>
+  <details class="notice">
+    <summary>Before you go: tickets, timing & confirmed plans</summary>
+    <p><strong>Confirmed:</strong> Tuesday Cap’t Loui 6–8 PM; Wednesday Carmine’s Times Square 6:30 PM; Friday Revel & Rye 7 AM.</p>
+    <p><strong>Statue of Liberty:</strong> Tickets still need to be purchased. Tuesday afternoon depends on your actual arrival, security and ferry timing. The earlier minute-by-minute plan was too optimistic to treat as guaranteed.</p>
+    <p><strong>SUMMIT:</strong> Your original itinerary labels Wednesday 7:30 PM as reserved. That conflicts with a relaxed 6:30 PM dinner. Check your confirmation and arrange a new time if needed; no booking has been changed here.</p>
+    <p><strong>Flexible stops:</strong> Other attractions, restaurants and ferry windows are planning suggestions, not reservations. Check operating hours, tickets and live transit before setting out.</p>
+  </details>
 
-    <section id="mapView" class="view" aria-label="Interactive trip map">
-      <div class="map-layout">
-        <div class="map-wrap" id="map">
-          <span class="borough-label manhattan">Manhattan</span>
-          <span class="borough-label brooklyn">Brooklyn</span>
-          <svg id="routeSvg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-            <polyline id="routeLine" points=""></polyline>
-          </svg>
-          <div id="markers"></div>
-          <div class="vehicle" id="vehicle" aria-hidden="true">🚕</div>
-        </div>
-        <article class="map-card" aria-live="polite">
+  <nav class="toolbar" aria-label="Itinerary controls">
+    <div class="toolbar-inner">
+      <div class="days" role="group" aria-label="Trip days" id="dayTabs"></div>
+      <div class="view-toggle" role="group" aria-label="Choose itinerary view">
+        <button type="button" class="view-btn" id="mapToggle" aria-pressed="true">🗺️ Map</button>
+        <button type="button" class="view-btn" id="listToggle" aria-pressed="false">☰ Timeline</button>
+      </div>
+    </div>
+  </nav>
+
+  <header class="day-intro">
+    <h2 id="dayHeading"></h2>
+    <p id="daySummary"></p>
+    <div class="day-note" id="dayNote"></div>
+  </header>
+
+  <section id="mapView" class="view" aria-label="Illustrative itinerary route">
+    <div class="map-layout">
+      <div class="map-wrap">
+        <span class="borough-label manhattan">Manhattan</span>
+        <span class="borough-label brooklyn">Brooklyn</span>
+        <svg id="routeSvg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          <polyline id="routeLine" points=""></polyline>
+        </svg>
+        <div id="markers"></div>
+        <div class="vehicle" id="vehicle" aria-hidden="true">🚕</div>
+      </div>
+      <article class="map-card">
+        <div id="mapDetails" aria-live="polite" aria-atomic="true">
           <div class="stop-count" id="stopCount"></div>
-          <div class="big-icon" id="mapIcon"></div>
-          <h2 id="mapTitle"></h2>
+          <div class="big-icon" id="mapIcon" aria-hidden="true"></div>
+          <h3 id="mapTitle"></h3>
           <div class="map-time" id="mapTime"></div>
-          <p id="mapDescription"></p>
+          <p class="description" id="mapDescription"></p>
           <div class="transit" id="mapTransit" hidden></div>
-          <div class="badges" id="mapBadges"></div>
-          <div class="links" id="mapLinks"></div>
-          <div class="map-actions">
-            <button class="action" id="prevStop">← Previous</button>
-            <button class="action primary" id="nextStop">Next stop →</button>
-            <div class="map-hint">Tap any map marker to jump to that stop.</div>
-          </div>
-        </article>
-      </div>
-    </section>
+          <div id="mapBadges"></div>
+        </div>
+        <div id="mapLinks"></div>
+        <div id="mapOptions"></div>
+        <div class="map-actions">
+          <button type="button" class="action" id="prevStop">← Previous</button>
+          <button type="button" class="action primary" id="nextStop">Next stop →</button>
+          <div class="map-hint">Tap a marker to explore. This is a stylized route, not a geographic navigation map. Use each stop’s directions link.</div>
+        </div>
+      </article>
+    </div>
+  </section>
 
-    <section id="listView" class="view" hidden aria-label="Timeline itinerary">
-      <div class="day-intro"><h2 id="dayHeading"></h2><span id="daySummary"></span></div>
-      <div class="timeline" id="timeline"></div>
-    </section>
-  </main>
+  <section id="listView" class="view" hidden aria-label="Timeline itinerary">
+    <div class="timeline" id="timeline"></div>
+  </section>
 
-  <script>
-    const trip = {
-      tue: {
-        tab: "Tue 9/15", title: "Arrival Day", summary: "Touch down, settle in, and meet the team.",
-        stops: [
-          {time:"11:00 AM – 1:30 PM",title:"Land at JFK & Check-In",icon:"✈️",mode:"plane",x:90,y:82,description:"Land at JFK, travel into Manhattan, drop off your luggage at the Sheraton Times Square, freshen up, and have lunch nearby.",transit:"AirTrain to Jamaica → LIRR to Penn Station → taxi to the Sheraton.",badges:["Arrival","Hotel check-in"],options:[
-            {title:"The Consulate Midtown",text:"Elegant French-American bistro. Try the French onion soup, steak frites or roasted branzino.",links:[website("https://theconsulate.nyc/"),menu("https://postmates.com/store/the-consulate-midtown/_OIDUsAuX4um1vs50cQWJg"),map("https://maps.google.com/?q=The+Consulate+Midtown+NYC")]},
-            {title:"Ippudo Westside",text:"World-class ramen. Try the Shiromaru Motoaji, pork buns or chicken kara-age.",links:[website("https://ippudony.com/"),menu("http://places.singleplatform.com/ippudo-westside/menu"),map("https://maps.google.com/?q=Ippudo+Westside+NYC")]}
-          ]},
-          {time:"3:00 PM – 4:30 PM",title:"Midtown Landmarks Tour",icon:"🏙️",mode:"walk",x:39,y:28,description:"Walk Fifth Avenue for Bryant Park, the New York Public Library, Rockefeller Center, Radio City, St. Patrick’s Cathedral, the Chrysler Building exterior and Grand Central.",transit:"An easy first-day walk through Midtown.",badges:["Free","Photo spots"],links:[map("https://maps.google.com/?q=Bryant+Park+NYC")]},
-          {time:"4:45 PM – 5:30 PM",title:"Quick Drink at The Campbell",icon:"🍸",mode:"taxi",x:51,y:38,description:"If schedules align, meet Leonard and Bruce for one drink at The Campbell inside Grand Central before heading uptown to meet Alex for dinner.",badges:["Historic lounge","Optional"],links:[website("https://www.thecampbellnyc.com/"),map("https://maps.google.com/?q=The+Campbell+Grand+Central")]},
-          {time:"6:00 PM – 8:00 PM",title:"Dinner with Alex at Cap’t Loui",icon:"🦀",mode:"subway",x:24,y:7,description:"Dinner together at Cap’t Loui Broadway in Morningside Heights—come hungry for a hands-on Cajun seafood boil.",transit:"Cap’t Loui Broadway is at 3147 Broadway. Take the 1 train uptown or use a taxi.",badges:["Dinner with Alex","Confirmed plan"],links:[website("https://captloui.com/ny-ny"),map("https://maps.google.com/?q=Cap%27t+Loui+3147+Broadway+New+York+NY")]}
-          ,{time:"8:30 PM – 10:30 PM",title:"Choose Your First NYC Night",icon:"🌙",mode:"taxi",x:35,y:25,description:"If you still have energy after meeting the team, choose a glamorous rooftop drink or a free nighttime walk through the heart of Midtown.",badges:["Optional","Choose your energy"],options:[
-            {title:"Ophelia Lounge",text:"A jewel-box rooftop on the 26th floor with 360-degree skyline and East River views. Open Tuesday until 11 PM; reserve if this is your first choice.",links:[website("https://www.opheliany.com/"),map("https://maps.google.com/?q=Ophelia+Lounge+NYC")]},
-            {title:"Midtown After Dark — Free",text:"Walk past St. Patrick’s Cathedral and Rockefeller Center, see Radio City lit up, then finish in Times Square steps from the hotel.",links:[map("https://maps.google.com/?q=Rockefeller+Center+NYC")]}
-          ]}
+  <footer>
+    Travel windows are estimates, not guaranteed connections. Optional and parallel activities are not additional commitments.
+    Ferry schedules, venue access and ticket availability can change.
+    <br>
+    <a href="https://www.ferry.nyc/routes-and-schedules/east-river/" target="_blank" rel="noopener noreferrer">NYC Ferry schedule</a>
+    ·
+    <a href="https://www.nps.gov/stli/planyourvisit/index.htm" target="_blank" rel="noopener noreferrer">Statue of Liberty visitor information</a>
+    ·
+    <a href="https://www.timeanddate.com/sun/usa/new-york?month=9&year=2026" target="_blank" rel="noopener noreferrer">September sunset times</a>
+  </footer>
+  <noscript><p>Please enable JavaScript to view the interactive itinerary.</p></noscript>
+</main>
+
+<script>
+"use strict";
+
+function website(url,label="Website ↗") { return {label,url}; }
+function map(place) {
+  return {
+    label:"Directions ↗",
+    url:"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(place)
+  };
+}
+
+const hotel = "Sheraton New York Times Square Hotel";
+const ferryLink = website(
+  "https://www.ferry.nyc/routes-and-schedules/east-river/",
+  "Live ferry schedule ↗"
+);
+
+const trip = {
+  tue:{
+    tab:"Tue 9/15",
+    title:"Touchdown & Lady Liberty",
+    summary:"Arrival, a conditional island visit, and seafood with Alex.",
+    note:"Protect the 6 PM dinner. Do not assume a 1:30 PM Statue ticket is reachable after an 11 AM JFK landing and a Midtown luggage stop. Book only after reviewing the actual available times and change terms.",
+    stops:[
+      {
+        time:"11:00 AM • arrival",
+        title:"Land at JFK",
+        short:"JFK",
+        icon:"✈️",mode:"plane",x:86,y:82,
+        description:"Land, collect bags and travel into Manhattan. Keep lunch quick; there is no room for a leisurely arrival-day restaurant stop if visiting Liberty Island.",
+        transit:"AirTrain to Jamaica → LIRR to Penn Station → onward to the hotel. Check live service and allow for baggage and transfer delays.",
+        badges:["Flight arrival"],
+        links:[map("John F. Kennedy International Airport")]
+      },
+      {
+        time:"Approximately 1:00–2:00 PM • estimate",
+        title:"Sheraton Luggage Drop",
+        short:"Sheraton",
+        icon:"🧳",mode:"subway",x:36,y:26,
+        description:"Ask the hotel to hold your luggage; room access may not be available yet. Reassess the clock before committing to the downtown trip.",
+        transit:"If running behind, move the island visit rather than trying to recover time by rushing.",
+        badges:["Luggage drop","Arrival-dependent"],
+        links:[map(hotel)]
+      },
+      {
+        time:"Afternoon • ticket time not booked",
+        title:"Statue of Liberty",
+        short:"Lady Liberty",
+        icon:"🗽",mode:"ferry",x:23,y:82,
+        description:"Provisional Liberty Island visit from The Battery. Choose New York General Admission through Statue City Cruises for the grounds and museum. Skip an Ellis Island visit on this tight afternoon. The ticket time is for the security queue, not a guaranteed boat departure.",
+        transit:"Allow for hotel-to-Battery travel, security, outbound and return boats, and the long trip uptown to dinner. A return boat may call at Ellis Island even if you do not get off. Confirm the actual return schedule before boarding.",
+        badges:["Not booked","Tight connection"],
+        links:[
+          website("https://www.cityexperiences.com/new-york/city-cruises/statue/","Official tickets ↗"),
+          website("https://www.nps.gov/stli/planyourvisit/index.htm","Visitor information ↗"),
+          map("Castle Clinton National Monument")
+        ],
+        options:[
+          {
+            title:"If Tuesday no longer works",
+            text:"Keep the dinner and move the island visit into Friday, replacing part of that day’s sightseeing. A harbor view is not the same as visiting Liberty Island; choose deliberately rather than buying a different cruise by mistake."
+          }
         ]
       },
-      wed: {
-        tab:"Wed 9/16",title:"Presentation Day One",summary:"Workday, Grand Central discoveries, and skyline views.",
-        stops:[
-          {time:"7:00 AM – 4:00 PM",title:"Rail Symposium",icon:"🎤",mode:"taxi",x:51,y:38,description:"Your full presentation and conference day at Grand Central Terminal. Lunch is included; Alex has his own afternoon plan nearby.",transit:"Taxi or Uber from the Sheraton; allow about 20 minutes.",badges:["Damaris • Work","Lunch included"]},
-          {time:"2:00 PM – 4:00 PM",title:"Alex at Well& Café and Cocktail Bar",icon:"☕",mode:"walk",x:57,y:34,description:"While you finish the symposium, Alex can have lunch and relax at the Well& café and cocktail bar at 825 Third Avenue until you are done at 4:00 PM.",transit:"825 Third Avenue is a short walk from Grand Central, making it easy to meet afterward.",badges:["Alex’s plan","Parallel activity"],links:[website("https://www.wellxdurst.com/825-third-avenue/"),map("https://maps.google.com/?q=Well%26+825+Third+Avenue+New+York+NY")]},
-          {time:"4:00 PM – 7:15 PM",title:"Decompress at Grand Central",icon:"🥂",mode:"walk",x:49,y:41,description:"Unwind at Grand Brasserie, browse Grand Central Market, see the Whispering Gallery, and view the Chrysler Building lobby.",badges:["Flexible","Grand Central"]},
-          {time:"7:30 PM – 9:00 PM",title:"SUMMIT One Vanderbilt",icon:"🌃",mode:"walk",x:53,y:37,description:"An immersive glass observatory experience with dramatic nighttime views over Manhattan.",transit:"Connected directly to Grand Central.",badges:["Reserved","Night views"],links:[map("https://maps.google.com/?q=SUMMIT+One+Vanderbilt")]},
-          {time:"9:00 PM",title:"Low-Key Dinner & Wine",icon:"🍷",mode:"taxi",x:36,y:24,description:"Finish the night close to the hotel with French food or a relaxed wine bar.",options:[
-            {title:"Quality Bistro",text:"Glamorous French dining room. Steak frites or dry-aged ribeye with Bordeaux or Cabernet.",links:[website("https://www.qualitybistro.com/"),menu("https://www.qualitybistro.com/menus/"),map("https://maps.google.com/?q=Quality+Bistro+NYC")]},
-            {title:"Aldo Sohm Wine Bar",text:"Chic, relaxed wine lounge. Charcuterie, baked Camembert or skirt steak with Grüner Veltliner or Pinot Noir.",links:[website("https://www.aldosohmwinebar.com/"),menu("https://www.aldosohmwinebar.com/menus/"),map("https://maps.google.com/?q=Aldo+Sohm+Wine+Bar")]}
-          ]}
-          ,{time:"10:30 PM – 11:30 PM",title:"Optional Midtown Nightcap",icon:"🌆",mode:"walk",x:40,y:45,description:"If dinner wakes you back up, end the night with one panoramic cocktail—or take the free option and stroll through Bryant Park before returning to the Sheraton.",badges:["Optional","One-drink stop"],options:[
-            {title:"The Skylark",text:"A sophisticated 30th-floor lounge with Empire State Building, Hudson Yards and Midtown views. Open on Wednesday evenings.",links:[website("https://www.theskylarknyc.com/"),map("https://maps.google.com/?q=The+Skylark+NYC")]},
-            {title:"Bryant Park Night Walk — Free",text:"See the lawn, fountain and New York Public Library illuminated after dark, then take an easy ride back to the hotel.",links:[map("https://maps.google.com/?q=Bryant+Park+NYC")]}
-          ]}
+      {
+        time:"Before dinner • leave a generous buffer",
+        title:"Return & Travel Uptown",
+        short:"Uptown transfer",
+        icon:"🚇",mode:"subway",x:25,y:49,
+        description:"Head straight to Cap’t Loui after returning to Manhattan. Do not add Wall Street or other downtown detours.",
+        transit:"Check a live route to 3147 Broadway. Allow roughly 60–75 minutes after reaching The Battery, plus any ferry delay; this is a planning buffer, not a guaranteed journey time.",
+        badges:["Dinner buffer"],
+        links:[map("Cap't Loui 3147 Broadway New York")]
+      },
+      {
+        time:"6:00–8:00 PM • confirmed",
+        title:"Cap’t Loui with Alex",
+        short:"Cap’t Loui",
+        icon:"🦀",mode:"subway",x:29,y:9,
+        description:"Your confirmed Broadway dinner together: Cajun seafood boil and a relaxed finish to the travel day.",
+        transit:"3147 Broadway, Morningside Heights. Contact the restaurant directly if travel delays affect arrival.",
+        badges:["Confirmed","Dinner with Alex"],
+        links:[
+          website("https://captloui.com/ny-ny"),
+          map("Cap't Loui 3147 Broadway New York")
         ]
       },
-      thu: {
-        tab:"Thu 9/17",title:"Presentation Day Two",summary:"Finish strong, then celebrate above the city.",
-        stops:[
-          {time:"7:00 AM – 4:00 PM",title:"Rail Symposium",icon:"🎤",mode:"taxi",x:51,y:38,description:"Day two presentation and conference sessions at Grand Central Terminal.",badges:["Work","Lunch included"]},
-          {time:"4:15 PM – 5:45 PM",title:"Oscar Wilde Happy Hour",icon:"🥂",mode:"subway",x:43,y:57,description:"Enjoy the theatrical Victorian decor and happy-hour cocktails at NYC’s famously extravagant bar.",transit:"N/R/W from 42nd Street to 28th Street, or take a taxi.",badges:["Happy hour","Photo spot"],links:[map("https://maps.google.com/?q=Oscar+Wilde+NYC")]},
-          {time:"6:00 PM – 7:30 PM",title:"Flatiron Dinner & Golden-Hour Walk",icon:"🍝",mode:"walk",x:44,y:59,description:"Stay in the neighborhood for dinner, then walk through Madison Square Park and photograph the Flatiron Building before heading back toward Midtown.",badges:["Flexible dinner","Free walk"],options:[
-            {title:"Eataly Flatiron",text:"Choose pizza, pasta, wine or a quick market meal depending on your appetite after happy hour.",links:[website("https://www.eataly.com/us_en/stores/nyc-flatiron"),map("https://maps.google.com/?q=Eataly+NYC+Flatiron")]},
-            {title:"Skirt Steak",text:"A lively, straightforward steak dinner close to Oscar Wilde, known for its focused prix-fixe-style menu.",links:[website("https://www.skirtsteaknyc.com/"),map("https://maps.google.com/?q=Skirt+Steak+NYC")]}
-          ]},
-          {time:"8:00 PM – 9:45 PM",title:"Refinery Rooftop",icon:"🍸",mode:"taxi",x:43,y:45,description:"A polished rooftop lounge with a direct view of the Empire State Building.",badges:["Skyline views","Cocktails"],links:[website("https://refineryrooftop.com/"),map("https://maps.google.com/?q=Refinery+Rooftop")]},
-          {time:"10:00 PM onward",title:"Speakeasy or Times Square Finale",icon:"🗝️",mode:"walk",x:48,y:47,description:"Make the last work night as long—or as easy—as you want with a candlelit speakeasy or a short nighttime walk near the hotel.",badges:["Optional","Late night"],options:[
-            {title:"Raines Law Room at The William",text:"A candlelit 1920s-inspired cocktail lounge spread across four intimate rooms, about five minutes from Grand Central.",links:[website("https://www.raineslawroom.com/"),map("https://maps.google.com/?q=Raines+Law+Room+at+The+William")]},
-            {title:"Times Square & Junior’s Cheesecake",text:"Return toward the Sheraton, enjoy the lights, and split a slice of cheesecake if you want a playful low-planning finish.",links:[map("https://maps.google.com/?q=Juniors+Restaurant+Times+Square")]}
-          ]}
-        ]
-      },
-      fri: {
-        tab:"Fri 9/18",title:"Art & Date-Night Energy",summary:"Run, museums, cocktails, and your dress-up dinner.",
-        stops:[
-          {time:"6:30 AM – 7:45 AM",title:"Central Park Run",icon:"🏃‍♀️",mode:"run",x:31,y:15,description:"A 4–5 mile sightseeing run from Columbus Circle through The Mall to Bethesda Fountain and back.",badges:["Free","4–5 miles"]},
-          {time:"8:00 AM – 9:00 AM",title:"Bagel & Cappuccino",icon:"🥯",mode:"walk",x:31,y:22,description:"Reward the Central Park run with a hand-rolled New York bagel and a cappuccino at Broad Nosh’s Columbus Circle location, then walk back to the Sheraton to shower and reset.",transit:"Broad Nosh is at 314 West 58th Street, close to Columbus Circle and the hotel.",badges:["Post-run","Open early"],links:[website("https://broadnosh.com/"),map("https://maps.google.com/?q=Broad+Nosh+Bagels+314+W+58th+St+NYC")]},
-          {time:"2:30 PM – 5:45 PM",title:"The Metropolitan Museum of Art",icon:"🏛️",mode:"taxi",x:49,y:14,description:"Prioritize the Temple of Dendur and European Paintings, then enjoy the Great Hall balcony before leaving enough travel time for The Morgan.",badges:["Museum","Leave by 5:45"],links:[map("https://maps.google.com/?q=The+Metropolitan+Museum+of+Art")]},
-          {time:"6:30 PM – 7:45 PM",title:"The Morgan Library",icon:"📚",mode:"subway",x:51,y:51,description:"Explore Pierpont Morgan’s extraordinary historic library during its free Friday evening hours.",transit:"4/5 train from 86th Street to Grand Central, then walk south.",badges:["Free Friday","Reservation required"],links:[map("https://maps.google.com/?q=The+Morgan+Library+%26+Museum")]},
-          {time:"8:15 PM",title:"Dress-Up Dinner",icon:"✨",mode:"taxi",x:29,y:55,description:"End your biggest city day with a stylish Italian dinner at Manhattan West or NoMad.",badges:["Fancy dinner","Reserve"],options:[
-            {title:"Ci Siamo — Primary Choice",text:"Live-fire Italian cooking. Look for the cavatelli, wood-fired dishes and pork chop.",links:[website("https://www.cisiamonyc.com/"),menu("https://www.cisiamonyc.com/menus/"),map("https://maps.google.com/?q=Ci+Siamo+NYC")]},
-            {title:"Cecconi’s NoMad — Alternate",text:"Fashionable Italian atmosphere with luxurious interiors and handmade pasta.",links:[map("https://maps.google.com/?q=Cecconis+NoMad")]}
-          ]}
-        ]
-      },
-      sat: {
-        tab:"Sat 9/19",title:"Brooklyn Finale",summary:"Iconic bridge views, pizza, and the flight home.",
-        stops:[
-          {time:"8:30 AM – 12:00 PM",title:"DUMBO & Brooklyn Waterfront",icon:"🌉",mode:"subway",x:68,y:70,description:"See the Washington Street Manhattan Bridge view, Pebble Beach, Jane’s Carousel and Brooklyn Bridge Park.",transit:"F train from Rockefeller Center to York Street, or taxi to DUMBO.",badges:["Free","Photo spots"],links:[map("https://maps.google.com/?q=DUMBO+Brooklyn")]},
-          {time:"12:00 PM – 1:15 PM",title:"Pizza & Wine Lunch",icon:"🍕",mode:"walk",x:72,y:74,description:"Choose iconic coal-fired pizza or a glamorous waterfront Italian lunch.",options:[
-            {title:"Juliana’s Pizza",text:"Classic Margherita or white pizza, paired with Chianti Classico or Pinot Grigio.",links:[website("https://julianaspizza.com/"),map("https://maps.google.com/?q=Julianas+Pizza+DUMBO")]},
-            {title:"Cecconi’s DUMBO",text:"Waterfront Italian with skyline views. Try the black-truffle and goat-cheese pizza.",links:[website("https://www.cecconisdumbo.com/"),menu("https://www.cecconisdumbo.com/en/menus"),map("https://maps.google.com/?q=Cecconis+DUMBO")]}
-          ]},
-          {time:"2:45 PM",title:"Airport Departure",icon:"✈️",mode:"plane",x:90,y:82,description:"Collect your luggage and head to JFK for the 6:51 PM flight home.",transit:"Taxi to Penn Station → LIRR to Jamaica → AirTrain to your JFK terminal.",badges:["6:51 PM flight"]}
+      {
+        time:"After 8:00 PM • optional",
+        title:"Midtown Lights or Early Night",
+        short:"Midtown lights",
+        icon:"🌙",mode:"subway",x:56,y:27,
+        description:"Return toward the Sheraton. Choose a short Times Square stroll or turn in before tomorrow’s symposium.",
+        badges:["Optional"],
+        options:[
+          {
+            title:"Times Square",
+            text:"A simple first-night photo stop on the way back.",
+            links:[map("Times Square New York")]
+          },
+          {
+            title:"Ophelia Lounge",
+            text:"Keep this as a separate rooftop alternative only if you have energy. Check hours and availability before traveling over.",
+            links:[website("https://www.opheliany.com/"),map("Ophelia Lounge New York")]
+          }
         ]
       }
-    };
+    ]
+  },
 
-    function website(url){ return {label:"Website ↗",url}; }
-    function menu(url){ return {label:"Menu ↗",url}; }
-    function map(url){ return {label:"Map ↗",url}; }
+  wed:{
+    tab:"Wed 9/16",
+    title:"Presentation Day & Carmine’s",
+    summary:"Grand Central, your confirmed dinner, and a skyline booking to reconcile.",
+    note:"SUMMIT was marked reserved at 7:30 PM in your original file. Do not assume it has moved to 4:10 PM. A new afternoon time would replace the flexible Grand Central stop below, subject to confirmation.",
+    stops:[
+      {
+        time:"7:00 AM–4:00 PM",
+        title:"Rail Symposium",
+        short:"Symposium",
+        icon:"🎤",mode:"taxi",x:54,y:40,
+        description:"Presentation and conference day at Grand Central. Lunch is included.",
+        transit:"Leave the Sheraton with a buffer for traffic, walking inside the terminal and setup.",
+        badges:["Damaris • Work","Lunch included"],
+        links:[map("Grand Central Terminal")]
+      },
+      {
+        time:"2:00–4:00 PM • Alex only",
+        title:"Alex at Well&",
+        short:"Alex: Well&",
+        icon:"☕",mode:"walk",x:73,y:24,
+        description:"Alex’s separate afternoon plan at Well& Café and Cocktail Bar, 825 Third Avenue, while you finish the symposium. Meet afterward.",
+        badges:["Parallel activity","Alex’s plan"],
+        links:[
+          website("https://www.wellxdurst.com/825-third-avenue/"),
+          map("825 Third Avenue New York")
+        ]
+      },
+      {
+        time:"4:00–5:15 PM • flexible",
+        title:"Grand Central & Midtown",
+        short:"Grand Central",
+        icon:"🏛️",mode:"walk",x:63,y:57,
+        description:"Meet Alex, see the main concourse and Whispering Gallery, and take a short walk toward Bryant Park and the library exterior. Choose this OR a successfully rebooked afternoon SUMMIT visit.",
+        transit:"Keep time for travel to Carmine’s and a change at the hotel if you need one. Interior access and opening hours should be checked separately.",
+        badges:["Flexible","Replacement slot"],
+        links:[map("Bryant Park New York"),map("New York Public Library Stephen A Schwarzman Building")]
+      },
+      {
+        time:"5:15–6:15 PM",
+        title:"Reset & Head to Dinner",
+        short:"Dinner buffer",
+        icon:"🧳",mode:"walk",x:32,y:21,
+        description:"Allow a hotel reset or go straight toward the restaurant. Do not squeeze another paid attraction into this window.",
+        badges:["Travel buffer"],
+        links:[map(hotel)]
+      },
+      {
+        time:"6:30 PM • confirmed",
+        title:"Carmine’s Times Square",
+        short:"Carmine’s",
+        icon:"🍝",mode:"walk",x:32,y:46,
+        description:"Your confirmed family-style Italian dinner at the Times Square location. Leave the meal open-ended until the SUMMIT conflict is resolved.",
+        badges:["Confirmed","Dinner with Alex"],
+        links:[map("Carmine's 200 West 44th Street New York")]
+      },
+      {
+        time:"7:30–9:00 PM • original booking",
+        title:"SUMMIT — Resolve Dinner Conflict",
+        short:"SUMMIT conflict",
+        icon:"🌃",mode:"walk",x:76,y:77,
+        description:"The supplied itinerary lists this as reserved. It overlaps dinner and cross-Midtown travel. Verify the reservation and request a different slot if needed. This card records a conflict, not a workable next stop after a full dinner.",
+        badges:["Booking conflict","Verify reservation"],
+        links:[
+          website("https://summitov.com/","SUMMIT tickets & information ↗"),
+          map("SUMMIT One Vanderbilt")
+        ]
+      },
+      {
+        time:"After dinner or SUMMIT • optional",
+        title:"Midtown After Dark",
+        short:"Midtown night",
+        icon:"✨",mode:"walk",x:46,y:72,
+        description:"Choose a short walk around Times Square, Rockefeller Center and Fifth Avenue, or one rooftop stop. Do not try to fit all of them in.",
+        badges:["Optional"],
+        options:[
+          {
+            title:"Rockefeller Center & Fifth Avenue",
+            text:"Exterior sightseeing and nighttime photos.",
+            links:[map("Rockefeller Center New York")]
+          },
+          {
+            title:"Elsie Rooftop or The Skylark",
+            text:"Choose one and check evening availability. These are alternatives, not reservations.",
+            links:[map("Elsie Rooftop New York"),website("https://www.theskylarknyc.com/")]
+          }
+        ]
+      }
+    ]
+  },
 
-    let activeDay = "tue";
-    let activeStop = 0;
+  thu:{
+    tab:"Thu 9/17",
+    title:"Brooklyn & Sunset on the Water",
+    summary:"Finish work, explore DUMBO, then ferry back toward Midtown.",
+    note:"Sunset is approximately 7:01 PM. Aim for a northbound DUMBO → East 34th Street East River ferry around 6:30–6:45 PM, choosing the actual sailing from the live schedule. Arrive early; boarding is capacity-dependent.",
+    stops:[
+      {
+        time:"7:00 AM–4:00 PM",
+        title:"Rail Symposium",
+        short:"Symposium",
+        icon:"🎤",mode:"taxi",x:53,y:32,
+        description:"Your second presentation and conference day at Grand Central.",
+        badges:["Damaris • Work","Lunch included"],
+        links:[map("Grand Central Terminal")]
+      },
+      {
+        time:"4:00–4:30 PM • optional",
+        title:"The Campbell or Grand Central Pause",
+        short:"The Campbell",
+        icon:"🥂",mode:"walk",x:32,y:21,
+        description:"A brief celebratory stop at The Campbell, or a quick look around the terminal before heading to Brooklyn. Skip this if work ends late.",
+        badges:["Optional","Skip if delayed"],
+        links:[website("https://www.thecampbellnyc.com/"),map("The Campbell Grand Central")]
+      },
+      {
+        time:"Approximately 4:30–5:20 PM",
+        title:"Travel to DUMBO",
+        short:"To Brooklyn",
+        icon:"🚇",mode:"subway",x:59,y:58,
+        description:"Use live transit directions to DUMBO. The goal is to reach Brooklyn early enough for daylight photos before your sunset ferry.",
+        transit:"Allow roughly 45–60 minutes including transfers and walking. Use York Street or High Street as appropriate to the live route.",
+        badges:["Travel buffer"],
+        links:[map("Washington Street and Water Street Brooklyn")]
+      },
+      {
+        time:"Approximately 5:20–6:15 PM",
+        title:"DUMBO & Brooklyn Bridge Park",
+        short:"DUMBO",
+        icon:"🌉",mode:"walk",x:79,y:76,
+        description:"Visit the Washington Street Manhattan Bridge photo spot, then the waterfront near Pebble Beach and Jane’s Carousel. Choose a quick Time Out Market rooftop look if time allows.",
+        transit:"Stay near the Fulton Ferry landing as sailing time approaches. A full Brooklyn Bridge crossing is not included in this window.",
+        badges:["Photo stops","Waterfront"],
+        links:[map("Pebble Beach Brooklyn"),map("Time Out Market New York")],
+        options:[
+          {
+            title:"Prefer walking the Brooklyn Bridge?",
+            text:"Replace the longer DUMBO stops with a bridge walk and reassess the ferry time. Do not stack a full bridge crossing onto this short waterfront window."
+          }
+        ]
+      },
+      {
+        time:"Target 6:30–6:45 PM departure • verify",
+        title:"Sunset NYC Ferry",
+        short:"Sunset ferry",
+        icon:"⛴️",mode:"ferry",x:77,y:44,
+        description:"Board an East River ferry northbound from DUMBO/Fulton Ferry to East 34th Street. This gives you a longer skyline ride than the short DUMBO–Wall Street hop and brings you back toward Midtown for dinner.",
+        transit:"Reach the landing about 20–30 minutes before your chosen sailing. Check route direction, service alerts and the actual timetable. This is public transport without tour narration; views and outdoor seating are not guaranteed.",
+        badges:["Not booked","Sunset ~7:01 PM","Budget sightseeing"],
+        links:[ferryLink,map("DUMBO Fulton Ferry NYC Ferry landing")],
+        options:[
+          {
+            title:"If the boat is full or weather is poor",
+            text:"Enjoy the skyline from Brooklyn Bridge Park if conditions allow, then use the subway back to Midtown. Move the ferry to another open window rather than chasing a missed departure."
+          }
+        ]
+      },
+      {
+        time:"Approximately 7:30 PM onward",
+        title:"Dinner & a Flexible Celebration",
+        short:"Midtown dinner",
+        icon:"🍽️",mode:"walk",x:39,y:53,
+        description:"Walk or ride onward from East 34th Street. Choose dinner near Midtown, with an optional rooftop afterward if you still feel like celebrating.",
+        badges:["Flexible dinner"],
+        options:[
+          {
+            title:"Quality Bistro",
+            text:"An existing dinner option near your hotel. Check availability rather than assuming a walk-in.",
+            links:[website("https://www.qualitybistro.com/"),map("Quality Bistro New York")]
+          },
+          {
+            title:"Refinery Rooftop",
+            text:"Keep this as a skyline-drink alternative, not a second mandatory evening activity.",
+            links:[website("https://refineryrooftop.com/"),map("Refinery Rooftop New York")]
+          }
+        ]
+      }
+    ]
+  },
 
-    const tabs = document.getElementById("dayTabs");
-    const timeline = document.getElementById("timeline");
-    const markers = document.getElementById("markers");
-    const vehicle = document.getElementById("vehicle");
+  fri:{
+    tab:"Fri 9/18",
+    title:"Art, the High Line & Date Night",
+    summary:"Your early breakfast, a focused Met visit, and the west-side waterfront.",
+    note:"This is an active sightseeing day. If Tuesday’s island visit moves here, replace a major block rather than adding it. The Morgan remains an optional swap, not an extra stop squeezed into the evening.",
+    stops:[
+      {
+        time:"7:00 AM • confirmed",
+        title:"Revel & Rye Breakfast",
+        short:"Revel & Rye",
+        icon:"☕",mode:"walk",x:45,y:22,
+        description:"Your confirmed 7 AM meal at Revel & Rye. Start with breakfast and coffee; there is no overlapping Central Park run this morning.",
+        badges:["Confirmed","7 AM"],
+        links:[map("Revel and Rye Bar and Restaurant New York Marriott Marquis")]
+      },
+      {
+        time:"Approximately 8:15–9:30 AM",
+        title:"Central Park Morning",
+        short:"Central Park",
+        icon:"🌳",mode:"walk",x:33,y:9,
+        description:"Take a focused walk in the southern part of Central Park. Choose a manageable route instead of trying to see the entire park before the Met.",
+        transit:"Leave a separate travel buffer to reach the museum entrance near East 82nd Street.",
+        badges:["Flexible","Outdoor time"],
+        links:[map("Central Park The Pond New York")]
+      },
+      {
+        time:"10:00 AM–12:30 PM • planned",
+        title:"The Metropolitan Museum of Art",
+        short:"The Met",
+        icon:"🏛️",mode:"taxi",x:68,y:13,
+        description:"A focused museum visit: prioritize the Temple of Dendur and a few favorite galleries. Check current opening hours and admission before committing to this window.",
+        badges:["Tickets to arrange","Focused visit"],
+        links:[website("https://www.metmuseum.org/"),map("The Metropolitan Museum of Art")]
+      },
+      {
+        time:"12:30–1:45 PM",
+        title:"Lunch & West-Side Transfer",
+        short:"Lunch & transfer",
+        icon:"🥪",mode:"subway",x:51,y:41,
+        description:"Have a quick lunch and travel to Hudson Yards. This block includes the cross-town journey; it is not another sightseeing stop.",
+        transit:"Use live transit or taxi directions to the High Line’s northern area.",
+        badges:["Lunch","Travel buffer"],
+        links:[map("Hudson Yards New York")]
+      },
+      {
+        time:"Approximately 1:45–3:15 PM",
+        title:"Hudson Yards & High Line",
+        short:"High Line",
+        icon:"🌿",mode:"walk",x:21,y:48,
+        description:"Take a brief look around Hudson Yards, then walk the High Line south toward Chelsea. Enjoy the elevated gardens, architecture and former rail corridor. No Edge or Vessel admission is included.",
+        badges:["Walk south","Rail history"],
+        links:[website("https://www.thehighline.org/"),map("High Line at Hudson Yards")]
+      },
+      {
+        time:"Approximately 3:15–5:00 PM",
+        title:"Chelsea Market & Waterfront",
+        short:"Chelsea",
+        icon:"🌊",mode:"walk",x:29,y:73,
+        description:"Browse Chelsea Market, then choose Pier 57 rooftop or Little Island—or sample both briefly if your energy allows. Treat the waterfront stops as flexible.",
+        badges:["Flexible","Food & views"],
+        links:[
+          map("Chelsea Market New York"),
+          map("Pier 57 Rooftop Park New York"),
+          website("https://littleisland.org/","Little Island ↗")
+        ]
+      },
+      {
+        time:"Approximately 5:00–6:30 PM",
+        title:"Hotel Reset",
+        short:"Freshen up",
+        icon:"🧳",mode:"taxi",x:60,y:59,
+        description:"Return to the Sheraton, rest and change for the evening. Keep this recovery and travel time rather than filling every minute.",
+        badges:["Rest","Change for dinner"],
+        links:[map(hotel)]
+      },
+      {
+        time:"Approximately 7:30 PM onward • choose one",
+        title:"Date-Night Dinner",
+        short:"Date night",
+        icon:"✨",mode:"taxi",x:57,y:82,
+        description:"Choose your main dinner or evening destination. Reservations are not assumed. Oscar Wilde can be the evening’s focus rather than an extra detour.",
+        badges:["Not booked","Choose your evening"],
+        options:[
+          {
+            title:"Oscar Wilde",
+            text:"The theatrical decor stop you wanted. Check dining and drink availability; no happy-hour offer is assumed.",
+            links:[map("Oscar Wilde 45 West 27th Street New York")]
+          },
+          {
+            title:"Ci Siamo",
+            text:"Keep your original dress-up Italian dinner option at Manhattan West.",
+            links:[website("https://www.cisiamonyc.com/"),map("Ci Siamo New York")]
+          },
+          {
+            title:"The Morgan Library — evening swap",
+            text:"If this remains a priority, shorten the west-side afternoon and verify Friday evening admission and reservation requirements directly. Replace part of the evening rather than adding a rushed visit.",
+            links:[website("https://www.themorgan.org/"),map("The Morgan Library and Museum")]
+          },
+          {
+            title:"West Village nightlife — alternative",
+            text:"Employees Only or Blue Note can replace the main evening plan. Check hours, showtimes and bookings first; a jazz set needs its own time block.",
+            links:[map("Employees Only New York"),map("Blue Note Jazz Club New York")]
+          }
+        ]
+      }
+    ]
+  },
 
-    Object.entries(trip).forEach(([key, day], index) => {
-      const button = document.createElement("button");
-      button.className = "day-btn";
-      button.type = "button";
-      button.role = "tab";
-      button.textContent = day.tab;
-      button.dataset.day = key;
-      button.setAttribute("aria-selected", index === 0 ? "true" : "false");
-      button.addEventListener("click", () => selectDay(key));
-      tabs.appendChild(button);
-    });
+  sat:{
+    tab:"Sat 9/19",
+    title:"Run, Bagels & Downtown Wandering",
+    summary:"A Central Park send-off, Chinatown and Little Italy, then JFK.",
+    note:"Be back at the hotel for luggage around 1:45–2:15 PM. Aim to leave for JFK by 2:45 PM, earlier if live service or your airline’s guidance requires it. Cut shopping first if running behind.",
+    stops:[
+      {
+        time:"Approximately 6:45–7:45 AM • optional",
+        title:"Central Park Run",
+        short:"Park run",
+        icon:"🏃‍♀️",mode:"run",x:30,y:10,
+        description:"Your relaxed Central Park run, moved from Friday to avoid the 7 AM breakfast conflict. Choose a familiar, manageable route and include the walk to and from the park.",
+        badges:["Optional","Flexible distance"],
+        links:[map("Columbus Circle New York")]
+      },
+      {
+        time:"Approximately 8:00–9:15 AM",
+        title:"Bagel, Cappuccino & Checkout",
+        short:"Bagel & checkout",
+        icon:"🥯",mode:"walk",x:48,y:28,
+        description:"Pick up a bagel and cappuccino near the hotel, then shower, pack and arrange luggage storage after checkout. If running late, skip the run and keep breakfast simple.",
+        badges:["Post-run","Store luggage"],
+        links:[map("Broad Nosh Bagels 314 West 58th Street New York"),map(hotel)]
+      },
+      {
+        time:"Approximately 9:15–10:00 AM",
+        title:"Travel Downtown",
+        short:"Downtown",
+        icon:"🚇",mode:"subway",x:39,y:48,
+        description:"Travel toward Chinatown and Little Italy. Use this as a neighborhood morning rather than a shopping marathon.",
+        transit:"Check a live subway route from the hotel; arrival time depends on weekend service.",
+        badges:["Travel buffer"],
+        links:[map("Canal Street and Centre Street New York")]
+      },
+      {
+        time:"Approximately 10:00–11:30 AM",
+        title:"Chinatown & Little Italy",
+        short:"Chinatown",
+        icon:"🏮",mode:"walk",x:63,y:69,
+        description:"Explore the streets around Mott Street and Mulberry Street. Enjoy the atmosphere and choose a snack or early lunch. Expect possible crowds, street events or diversions.",
+        badges:["Neighborhood walk","Photo stops"],
+        links:[map("Mott Street Chinatown New York"),map("Mulberry Street Little Italy New York")]
+      },
+      {
+        time:"Approximately 11:30 AM–12:45 PM",
+        title:"Lunch & Optional SoHo",
+        short:"Lunch / SoHo",
+        icon:"🍕",mode:"walk",x:31,y:74,
+        description:"Have lunch, then take a short SoHo architecture or browsing walk only if time permits. Washington Square Park and the West Village are alternatives—not additional required stops.",
+        badges:["Flexible","Cut browsing if late"],
+        options:[
+          {
+            title:"Chinatown lunch",
+            text:"Choose a nearby dumpling or noodle spot based on the queue and what looks good.",
+            links:[map("Restaurants Chinatown Manhattan")]
+          },
+          {
+            title:"Little Italy / Lombardi’s",
+            text:"An Italian lunch alternative. Check opening hours and the wait before committing.",
+            links:[map("Lombardi's Pizza New York")]
+          },
+          {
+            title:"SoHo",
+            text:"A brief look at the cast-iron streets, then head back to the hotel.",
+            links:[map("Greene Street SoHo New York")]
+          }
+        ]
+      },
+      {
+        time:"12:45–2:15 PM • protected buffer",
+        title:"Return for Luggage",
+        short:"Collect bags",
+        icon:"🧳",mode:"subway",x:69,y:34,
+        description:"Travel back to the Sheraton, collect luggage and check the airport route. This time is intentionally protected.",
+        badges:["Airport buffer"],
+        links:[map(hotel)]
+      },
+      {
+        time:"2:45 PM target departure • flight 6:51 PM",
+        title:"Head to JFK",
+        short:"JFK home",
+        icon:"✈️",mode:"plane",x:86,y:85,
+        description:"Leave Midtown for your 6:51 PM flight. Check the airline’s terminal, bag-drop cutoff and recommended arrival time. Depart earlier if necessary.",
+        transit:"One option: Penn Station → LIRR to Jamaica → AirTrain to your terminal. Check current weekend service before leaving.",
+        badges:["6:51 PM flight","Allow disruption buffer"],
+        links:[map("John F. Kennedy International Airport")]
+      }
+    ]
+  }
+};
 
-    function selectDay(key){
-      activeDay = key;
-      activeStop = 0;
-      document.querySelectorAll(".day-btn").forEach(btn => btn.setAttribute("aria-selected", String(btn.dataset.day === key)));
-      renderTimeline();
-      renderMap();
-    }
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, character => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  })[character]);
+}
 
-    function renderTimeline(){
-      const day = trip[activeDay];
-      document.getElementById("dayHeading").textContent = day.title;
-      document.getElementById("daySummary").textContent = day.summary;
-      timeline.innerHTML = day.stops.map(stop => `
-        <article class="card">
-          <div class="card-top">
-            <div>
-              <div class="time">${stop.time}</div>
-              <h3>${stop.title}</h3>
-            </div>
-            <div class="card-icon" aria-hidden="true">${stop.icon}</div>
-          </div>
-          <p class="description">${stop.description}</p>
-          ${stop.transit ? `<div class="transit">${modeIcon(stop.mode)} ${stop.transit}</div>` : ""}
-          ${badgesHtml(stop.badges)}
-          ${linksHtml(stop.links)}
-          ${optionsHtml(stop.options)}
-        </article>`).join("");
-    }
+function readSaved(key,fallback) {
+  try { return localStorage.getItem(key) || fallback; }
+  catch { return fallback; }
+}
+function save(key,value) {
+  try { localStorage.setItem(key,value); } catch {}
+}
 
-    function renderMap(){
-      const day = trip[activeDay];
-      const points = day.stops.map(stop => `${stop.x},${stop.y}`).join(" ");
-      document.getElementById("routeLine").setAttribute("points", points);
-      markers.innerHTML = day.stops.map((stop,index) => `
-        <button class="marker ${index === activeStop ? "active" : ""} ${index < activeStop ? "visited" : ""}"
-          style="left:${stop.x}%;top:${stop.y}%" data-stop="${index}" aria-label="Open ${stop.title}">
-          <span class="marker-dot">${stop.icon}</span><span class="marker-label">${stop.title}</span>
-        </button>`).join("");
-      markers.querySelectorAll(".marker").forEach(btn => btn.addEventListener("click", () => showStop(Number(btn.dataset.stop))));
-      showStop(activeStop, false);
-    }
+function modeIcon(mode) {
+  return ({
+    plane:"✈️",walk:"🚶‍♀️",run:"🏃‍♀️",
+    subway:"🚇",taxi:"🚕",ferry:"⛴️"
+  })[mode] || "🚶‍♀️";
+}
 
-    function showStop(index, animate = true){
-      const stops = trip[activeDay].stops;
-      activeStop = Math.max(0, Math.min(index, stops.length - 1));
-      const stop = stops[activeStop];
-      if (!animate) vehicle.style.transition = "none";
-      vehicle.style.left = `${stop.x}%`;
-      vehicle.style.top = `${stop.y}%`;
-      vehicle.textContent = modeIcon(stop.mode);
-      if (!animate) requestAnimationFrame(() => vehicle.style.transition = "");
+function badgesHtml(items=[]) {
+  if (!items.length) return "";
+  return `<div class="badges">${items.map(item => {
+    const warning = /not booked|conflict|verify|tight|arrival-dependent/i.test(item);
+    return `<span class="badge${warning ? " warning" : ""}">${escapeHtml(item)}</span>`;
+  }).join("")}</div>`;
+}
 
-      document.querySelectorAll(".marker").forEach((marker,index) => {
-        marker.classList.toggle("active", index === activeStop);
-        marker.classList.toggle("visited", index < activeStop);
-      });
-      document.getElementById("stopCount").textContent = `${trip[activeDay].tab} • Stop ${activeStop + 1} of ${stops.length}`;
-      document.getElementById("mapIcon").textContent = stop.icon;
-      document.getElementById("mapTitle").textContent = stop.title;
-      document.getElementById("mapTime").textContent = stop.time;
-      document.getElementById("mapDescription").textContent = stop.description;
-      const transitEl = document.getElementById("mapTransit");
-      transitEl.hidden = !stop.transit;
-      transitEl.textContent = stop.transit ? `${modeIcon(stop.mode)} ${stop.transit}` : "";
-      document.getElementById("mapBadges").innerHTML = (stop.badges || []).map(b => `<span class="badge">${b}</span>`).join("");
-      const combinedLinks = [...(stop.links || []), ...((stop.options || []).flatMap(o => o.links || []))];
-      document.getElementById("mapLinks").innerHTML = linksHtml(combinedLinks);
-      document.getElementById("prevStop").disabled = activeStop === 0;
-      const next = document.getElementById("nextStop");
-      next.disabled = activeStop === stops.length - 1;
-      next.textContent = activeStop === stops.length - 1 ? "Day complete ✓" : "Next stop →";
-    }
+function linksHtml(items=[]) {
+  const seen = new Set();
+  const valid = items.filter(item => {
+    try {
+      const url = new URL(item.url);
+      if (!["http:","https:"].includes(url.protocol) || seen.has(url.href)) return false;
+      seen.add(url.href);
+      return true;
+    } catch { return false; }
+  });
+  if (!valid.length) return "";
+  return `<div class="links">${valid.map(item =>
+    `<a class="link" href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.label)}</a>`
+  ).join("")}</div>`;
+}
 
-    function modeIcon(mode){ return ({plane:"✈️",walk:"🚶‍♀️",run:"🏃‍♀️",subway:"🚇",taxi:"🚕"})[mode] || "🚕"; }
-    function badgesHtml(items){ return items?.length ? `<div class="badges">${items.map(item => `<span class="badge">${item}</span>`).join("")}</div>` : ""; }
-    function linksHtml(items){
-      if (!items?.length) return "";
-      const unique = items.filter((item,index,array) => array.findIndex(other => other.url === item.url) === index);
-      return `<div class="links">${unique.map(item => `<a class="link" href="${item.url}" target="_blank" rel="noopener noreferrer">${item.label}</a>`).join("")}</div>`;
-    }
-    function optionsHtml(items){
-      if (!items?.length) return "";
-      return `<details><summary>Dining choices</summary>${items.map(item => `<div class="option"><strong>${item.title}</strong>${item.text}${linksHtml(item.links)}</div>`).join("")}</details>`;
-    }
+function optionsHtml(items=[]) {
+  if (!items.length) return "";
+  return `<details class="choices">
+    <summary>Options & alternatives</summary>
+    ${items.map(item => `<div class="option">
+      <strong>${escapeHtml(item.title)}</strong>
+      ${escapeHtml(item.text)}
+      ${linksHtml(item.links)}
+    </div>`).join("")}
+  </details>`;
+}
 
-    document.getElementById("prevStop").addEventListener("click", () => showStop(activeStop - 1));
-    document.getElementById("nextStop").addEventListener("click", () => showStop(activeStop + 1));
+let activeDay = readSaved("nyc-itinerary-day","tue");
+if (!Object.hasOwn(trip,activeDay)) activeDay = "tue";
+let activeStop = 0;
 
-    const mapView = document.getElementById("mapView");
-    const listView = document.getElementById("listView");
-    const mapToggle = document.getElementById("mapToggle");
-    const listToggle = document.getElementById("listToggle");
-    function setView(view){
-      const isMap = view === "map";
-      mapView.hidden = !isMap;
-      listView.hidden = isMap;
-      mapToggle.setAttribute("aria-pressed", String(isMap));
-      listToggle.setAttribute("aria-pressed", String(!isMap));
-      localStorage.setItem("nyc-itinerary-view", view);
-    }
-    mapToggle.addEventListener("click", () => setView("map"));
-    listToggle.addEventListener("click", () => setView("list"));
+const tabs = document.getElementById("dayTabs");
+const timeline = document.getElementById("timeline");
+const markers = document.getElementById("markers");
+const vehicle = document.getElementById("vehicle");
 
-    renderTimeline();
-    renderMap();
-    setView(localStorage.getItem("nyc-itinerary-view") || "map");
-  </script>
+Object.entries(trip).forEach(([key,day]) => {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "day-btn";
+  button.textContent = day.tab;
+  button.dataset.day = key;
+  button.setAttribute("aria-pressed",String(key === activeDay));
+  button.addEventListener("click",() => selectDay(key));
+  tabs.appendChild(button);
+});
+
+function selectDay(key) {
+  if (!Object.hasOwn(trip,key)) return;
+  activeDay = key;
+  activeStop = 0;
+  save("nyc-itinerary-day",key);
+  tabs.querySelectorAll("button").forEach(button => {
+    button.setAttribute("aria-pressed",String(button.dataset.day === key));
+  });
+  renderDay();
+}
+
+function renderDay() {
+  const day = trip[activeDay];
+  document.getElementById("dayHeading").textContent = day.title;
+  document.getElementById("daySummary").textContent = day.summary;
+  document.getElementById("dayNote").textContent = day.note;
+  renderTimeline();
+  renderMap();
+}
+
+function renderTimeline() {
+  timeline.innerHTML = trip[activeDay].stops.map(stop => `
+    <article class="card">
+      <div class="card-top">
+        <div>
+          <div class="time">${escapeHtml(stop.time)}</div>
+          <h3>${escapeHtml(stop.title)}</h3>
+        </div>
+        <div class="card-icon" aria-hidden="true">${stop.icon}</div>
+      </div>
+      <p class="description">${escapeHtml(stop.description)}</p>
+      ${stop.transit ? `<div class="transit">${modeIcon(stop.mode)} ${escapeHtml(stop.transit)}</div>` : ""}
+      ${badgesHtml(stop.badges)}
+      ${linksHtml(stop.links)}
+      ${optionsHtml(stop.options)}
+    </article>
+  `).join("");
+}
+
+function renderMap() {
+  const stops = trip[activeDay].stops;
+  document.getElementById("routeLine").setAttribute(
+    "points",stops.map(stop => `${stop.x},${stop.y}`).join(" ")
+  );
+  markers.innerHTML = stops.map((stop,index) => `
+    <button type="button" class="marker" style="left:${stop.x}%;top:${stop.y}%"
+      data-stop="${index}" aria-label="${escapeHtml(`Stop ${index+1}: ${stop.title}`)}"
+      aria-pressed="false">
+      <span class="marker-dot" aria-hidden="true">${stop.icon}</span>
+      <span class="marker-label">${index+1}. ${escapeHtml(stop.short || stop.title)}</span>
+    </button>
+  `).join("");
+  markers.querySelectorAll("button").forEach(button => {
+    button.addEventListener("click",() => showStop(Number(button.dataset.stop)));
+  });
+  showStop(activeStop,false);
+}
+
+function showStop(index,animate=true) {
+  const stops = trip[activeDay].stops;
+  activeStop = Math.max(0,Math.min(index,stops.length-1));
+  const stop = stops[activeStop];
+
+  vehicle.style.transition = animate ? "" : "none";
+  vehicle.style.left = `${stop.x}%`;
+  vehicle.style.top = `${stop.y}%`;
+  vehicle.textContent = modeIcon(stop.mode);
+
+  markers.querySelectorAll("button").forEach((button,i) => {
+    button.classList.toggle("active",i === activeStop);
+    button.setAttribute("aria-pressed",String(i === activeStop));
+  });
+
+  document.getElementById("stopCount").textContent =
+    `${trip[activeDay].tab} • Stop ${activeStop+1} of ${stops.length}`;
+  document.getElementById("mapIcon").textContent = stop.icon;
+  document.getElementById("mapTitle").textContent = stop.title;
+  document.getElementById("mapTime").textContent = stop.time;
+  document.getElementById("mapDescription").textContent = stop.description;
+
+  const transit = document.getElementById("mapTransit");
+  transit.hidden = !stop.transit;
+  transit.textContent = stop.transit ? `${modeIcon(stop.mode)} ${stop.transit}` : "";
+
+  document.getElementById("mapBadges").innerHTML = badgesHtml(stop.badges);
+  document.getElementById("mapLinks").innerHTML = linksHtml(stop.links);
+  document.getElementById("mapOptions").innerHTML = optionsHtml(stop.options);
+
+  document.getElementById("prevStop").disabled = activeStop === 0;
+  const next = document.getElementById("nextStop");
+  next.disabled = activeStop === stops.length-1;
+  next.textContent = next.disabled ? "End of day ✓" : "Next stop →";
+}
+
+document.getElementById("prevStop").addEventListener("click",() => showStop(activeStop-1));
+document.getElementById("nextStop").addEventListener("click",() => showStop(activeStop+1));
+
+function setView(value) {
+  const view = value === "list" ? "list" : "map";
+  const isMap = view === "map";
+  document.getElementById("mapView").hidden = !isMap;
+  document.getElementById("listView").hidden = isMap;
+  document.getElementById("mapToggle").setAttribute("aria-pressed",String(isMap));
+  document.getElementById("listToggle").setAttribute("aria-pressed",String(!isMap));
+  save("nyc-itinerary-view",view);
+}
+
+document.getElementById("mapToggle").addEventListener("click",() => setView("map"));
+document.getElementById("listToggle").addEventListener("click",() => setView("list"));
+
+renderDay();
+setView(readSaved("nyc-itinerary-view","map"));
+</script>
 </body>
 </html>
